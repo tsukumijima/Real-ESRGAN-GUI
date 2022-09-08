@@ -61,13 +61,13 @@ class MainWindowPage extends StatefulWidget {
 
 class _MainWindowPageState extends State<MainWindowPage> {
 
-  // 入力ファイル
+  // 拡大元の画像ファイル
   XFile? inputFile;
 
-  // 入力ファイルフォームのコントローラー
+  // 拡大元の画像ファイルフォームのコントローラー
   TextEditingController inputFileController = TextEditingController();
 
-  // 出力ファイルフォームのコントローラー
+  // 保存先のファイルフォームのコントローラー
   TextEditingController outputFileController = TextEditingController();
 
   // モデルの種類 (デフォルト: realesr-animevideov3)
@@ -76,7 +76,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 拡大率 (デフォルト: 4倍)
   String upscaleRatio = '4x';
 
-  // 出力形式 (デフォルト: jpg (ただし入力ファイルの形式に合わせられる))
+  // 保存形式 (デフォルト: jpg (ただし拡大元の画像ファイルの形式に合わせられる))
   String outputFormat = 'jpg';
 
   // 変換の進捗状況 (デフォルト: 0%)
@@ -86,15 +86,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
 
     if (inputFile != null) {
 
-      // 出力形式が入力ファイルと同じなら、拡張子には入力ファイルと同じものを使う
+      // 保存形式が拡大元の画像ファイルと同じなら、拡張子には拡大元の画像ファイルと同じものを使う
       var extension = outputFormat;
       if (extension == path.extension(inputFile!.path).toLowerCase().replaceAll('jpeg', 'jpg').replaceAll('.', '')) {
         extension = path.extension(inputFile!.path).replaceAll('.', '');
       }
 
-      // 出力ファイルのパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
+      // 保存先のファイルのパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
       // 4x の部分は拡大率によって変わる
-      // jpg の部分は出力形式によって変わる
+      // jpg の部分は保存形式によって変わる
       outputFileController.text = '${path.withoutExtension(inputFile!.path)}-upscale-${upscaleRatio}.${extension}';
     }
   }
@@ -120,7 +120,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         controller: inputFileController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: '入力ファイル',
+                          labelText: '拡大元の画像ファイル',
                         ),
                       ),
                     ),
@@ -141,19 +141,19 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           // ファイルピッカーを開き、選択されたファイルを格納
                           inputFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypeGroup]);
 
-                          // もし入力ファイルが入っていれば、フォームにファイルパスを設定
+                          // もし拡大元の画像ファイルが入っていれば、フォームにファイルパスを設定
                           if (inputFile != null) {
                             setState(() {
 
-                              // 入力ファイルフォームのテキストを更新
+                              // 拡大元の画像ファイルフォームのテキストを更新
                               inputFileController.text = inputFile!.path;
 
-                              // 出力形式を入力ファイルの拡張子から取得
+                              // 保存形式を拡大元の画像ファイルの拡張子から取得
                               // 拡張子が .jpeg だった場合も jpg に統一する
                               outputFormat = path.extension(inputFile!.path).replaceAll('.', '').toLowerCase();
                               if (outputFormat == 'jpeg') outputFormat = 'jpg';
 
-                              // 出力ファイルフォームのテキストを更新
+                              // 保存先のファイルフォームのテキストを更新
                               updateOutputFileName();
 
                             });
@@ -168,7 +168,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   controller: outputFileController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: '出力ファイル',
+                    labelText: '保存先のファイル',
                   ),
                 ),
                 SizedBox(height: 28),
@@ -239,7 +239,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             // 拡大率が変更されたらセット
                             upscaleRatio = value ?? '4x';
 
-                            // 出力ファイルフォームのテキストを更新
+                            // 保存先のファイルフォームのテキストを更新
                             updateOutputFileName();
                           });
                         },
@@ -252,7 +252,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   children: [
                     SizedBox(
                       width: 100,
-                      child: Text('出力形式:', style: TextStyle(fontSize: 16))
+                      child: Text('保存形式:', style: TextStyle(fontSize: 16))
                     ),
                     Expanded(
                       child: DropdownButtonFormField(
@@ -275,10 +275,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         onChanged: (String? value) {
                           setState(() {
 
-                            // 出力形式が変更されたらセット
+                            // 保存形式が変更されたらセット
                             outputFormat = value ?? 'jpg';
 
-                            // 出力ファイルフォームのテキストを更新
+                            // 保存先のファイルフォームのテキストを更新
                             updateOutputFileName();
 
                           });
@@ -306,7 +306,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // バリデーション
                       if (inputFile == null) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('入力ファイルが指定されていません！'),
+                          content: const Text('拡大元の画像ファイルが指定されていません！'),
                           action: SnackBarAction(
                             label: '閉じる',
                             onPressed: () {
@@ -318,7 +318,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       }
                       if (outputFileController.text == '') {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('出力ファイルが指定されていません！'),
+                          content: const Text('保存先のファイルが指定されていません！'),
                           action: SnackBarAction(
                             label: '閉じる',
                             onPressed: () {
@@ -337,15 +337,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // realesrgan-ncnn-vulkan コマンドを実行
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
                       var process = await Process.start('C:/Applications/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe', [
-                        // 入力ファイル
+                        // 拡大元の画像ファイル
                         '-i', inputFile!.path,
-                        // 出力ファイル
+                        // 保存先のファイル
                         '-o', outputFileController.text,
                         // 利用モデル
                         '-n', modelType,
                         // 拡大率 (4x の x は除く)
                         '-s', upscaleRatio.replaceAll('x', ''),
-                        // 出力形式
+                        // 保存形式
                         '-f', outputFormat,
                       ]);
 
@@ -363,7 +363,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         }
                       });
 
-                      // プロセスの終了を待つ
+                      // realesrgan-ncnn-vulkan の終了を待つ
                       var exitCode = await process.exitCode;
 
                       // プログレスバーを 100% に設定
@@ -371,14 +371,20 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         progress = 100;
                       });
 
-                      // 終了コードが0以外ならエラーを表示
-                      if (exitCode != 0) {
+                      // 終了コードが 0 (=成功)
+                      if (exitCode == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('拡大した画像を保存しました。'),
+                          action: SnackBarAction(
+                            label: '閉じる',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            },
+                          ),
+                        ));
 
-                        // プログレスバーを 0% に設定（成功していないため）
-                        setState(() {
-                          progress = 0;
-                        });
-
+                      // 終了コードが 0 以外 (エラーで失敗)
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: const Text('画像の拡大に失敗しました…'),
                           action: SnackBarAction(
@@ -389,6 +395,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           ),
                         ));
                       }
+
+                      // プログレスバーを 0% に戻す
+                      setState(() {
+                        progress = 0;
+                      });
                     },
                   ),
                 ),
