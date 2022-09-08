@@ -347,7 +347,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
                       var executablePath = path.join(
                         path.dirname(Platform.resolvedExecutable),
-                        'data/flutter_assets/assets/bin/realesrgan-ncnn-vulkan.exe',
+                        'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
                       );
                       if (Platform.isMacOS) {
                         executablePath = executablePath.replaceFirst('.exe', '');  // Mac の場合は末尾の .exe を削る

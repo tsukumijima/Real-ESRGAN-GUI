@@ -69,9 +69,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
-    - assets/bin/
-    - assets/bin/models/
-    - assets/fonts/
+    - assets/models/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -87,9 +85,9 @@ flutter:
   fonts:
     - family: M PLUS 2
       fonts:
-        - asset: assets/fonts/MPLUS2-Medium.ttf
+        - asset: fonts/MPLUS2-Medium.ttf
           weight: 500
-        - asset: assets/fonts/MPLUS2-Bold.ttf
+        - asset: fonts/MPLUS2-Bold.ttf
           weight: 700
   #
   # For details regarding fonts from package dependencies,
