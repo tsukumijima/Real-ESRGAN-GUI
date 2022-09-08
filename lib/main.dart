@@ -192,7 +192,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   children: [
                     SizedBox(
                       width: 100,
-                      child: Text('出力形式:', style: TextStyle(fontSize: 16))
+                      child: Text('拡大率:', style: TextStyle(fontSize: 16))
                     ),
                     Expanded(
                       child: DropdownButtonFormField(
