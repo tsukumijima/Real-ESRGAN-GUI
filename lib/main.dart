@@ -11,17 +11,17 @@ void main() async {
   // おまじない
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 最小ウインドウサイズを設定
-  // ref: https://zenn.dev/tris/articles/006c41f9c473a4
+  // ウインドウの位置と大きさを設定
   double minWidth = 1100;
   double minHeight = 953;
-  setWindowMinSize(Size(minWidth, minHeight));
-
-  // ウインドウの位置と大きさを設定
   var screen = await getCurrentScreen();
   var top = (screen!.visibleFrame.height - minHeight) / 2;
   var left = (screen.visibleFrame.width - minWidth) / 2;
   setWindowFrame(Rect.fromLTWH(left, top, minWidth, minHeight));
+
+  // 最小ウインドウサイズを設定
+  // ref: https://zenn.dev/tris/articles/006c41f9c473a4
+  setWindowMinSize(Size(minWidth, minHeight));
 
   // ウィンドウタイトルを設定
   setWindowTitle('Real-ESRGAN-GUI');
