@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:path/path.dart' as path;
@@ -18,6 +20,9 @@ class RealESRGanGUIApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         fontFamily: 'Hiragino Sans',
+        snackBarTheme: SnackBarThemeData(
+          contentTextStyle: TextStyle(fontFamily: 'Hiragino Sans'),
+        ),
       ),
       home: const MainWindowPage(title: 'Real-ESRGAN-GUI'),
     );
@@ -123,7 +128,6 @@ class _MainWindowPageState extends State<MainWindowPage> {
                               // 拡張子が .jpeg だった場合も jpg に統一する
                               outputFormat = path.extension(inputFile!.path).replaceAll('.', '').toLowerCase();
                               if (outputFormat == 'jpeg') outputFormat = 'jpg';
-                              print(outputFormat);
 
                               // 出力ファイルフォームのテキストを更新
                               updateOutputFileName();
@@ -271,8 +275,74 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   width: 200,
                   height: 54,
                   child: ElevatedButton(
-                    child: Text('変換開始', style: TextStyle(fontSize: 20)),
-                    onPressed: () {
+                    child: Text('拡大開始', style: TextStyle(fontSize: 20)),
+                    // 拡大開始ボタンが押されたとき
+                    onPressed: () async {
+
+                      // バリデーション
+                      if (inputFile == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('入力ファイルが指定されていません！'),
+                          action: SnackBarAction(
+                            label: '閉じる',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            },
+                          ),
+                        ));
+                        return;
+                      }
+                      if (outputFileController.text == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('出力ファイルが指定されていません！'),
+                          action: SnackBarAction(
+                            label: '閉じる',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            },
+                          ),
+                        ));
+                        return;
+                      }
+
+                      // realesrgan-ncnn-vulkan コマンドを実行
+                      // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
+                      var process = await Process.start('C:/Applications/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe', [
+                        // 入力ファイル
+                        '-i', inputFile!.path,
+                        // 出力ファイル
+                        '-o', outputFileController.text,
+                        // 利用モデル
+                        '-n', modelType,
+                        // 拡大率 (4x の x は除く)
+                        '-s', upscaleRatio.replaceAll('x', ''),
+                        // 出力形式
+                        '-f', outputFormat,
+                      ]);
+
+                      // 標準エラー出力を受け取ったとき
+                      process.stderr.transform(utf8.decoder).forEach((line) {
+
+
+
+                        print(line);
+                      });
+
+                      // プロセスの終了を待つ
+                      var exitCode = await process.exitCode;
+
+                      // 終了コードが0以外ならエラーを表示
+                      if (exitCode != 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('画像の拡大に失敗しました…'),
+                          action: SnackBarAction(
+                            label: '閉じる',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            },
+                          ),
+                        ));
+                      }
                     },
                   ),
                 ),
