@@ -198,11 +198,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           ),
                           DropdownMenuItem(
                             value: 'realesrgan-x4plus-anime',
-                            child: Text('realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと遅い)'),
+                            child: Text('realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)'),
                           ),
                           DropdownMenuItem(
                             value: 'realesrgan-x4plus',
-                            child: Text('realesrgan-x4plus (汎用的なモデル)'),
+                            child: Text('realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)'),
                           ),
                         ],
                         onChanged: (String? value) {
