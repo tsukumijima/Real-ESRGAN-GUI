@@ -1,6 +1,6 @@
 
 name: real_esrgan_gui
-description: Real-ESRGAN GUI Wrapper
+description: Lovely Real-ESRGAN GUI Wrapper
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
