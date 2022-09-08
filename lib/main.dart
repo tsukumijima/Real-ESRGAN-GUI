@@ -107,6 +107,12 @@ class _MainWindowPageState extends State<MainWindowPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          Center(
+            child: Text('version 1.0.0', style: TextStyle(fontSize: 16)),
+          ),
+          SizedBox(width: 16),
+        ],
       ),
       body: Column(
         children: [
