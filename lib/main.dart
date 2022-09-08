@@ -309,7 +309,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       }
 
                       // プログレスバーを一旦 0% に戻す
-                      progress = 0;
+                      setState(() {
+                        progress = 0;
+                      });
 
                       // realesrgan-ncnn-vulkan コマンドを実行
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
@@ -344,11 +346,18 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       var exitCode = await process.exitCode;
 
                       // プログレスバーを 100% に設定
-                      progress = 100;
+                      setState(() {
+                        progress = 100;
+                      });
 
                       // 終了コードが0以外ならエラーを表示
                       if (exitCode != 0) {
-                        progress = 0;
+
+                        // プログレスバーを 0% に設定（成功していないため）
+                        setState(() {
+                          progress = 0;
+                        });
+
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: const Text('画像の拡大に失敗しました…'),
                           action: SnackBarAction(
