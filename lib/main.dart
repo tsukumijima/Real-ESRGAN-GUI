@@ -79,8 +79,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 保存形式 (デフォルト: jpg (ただし拡大元の画像ファイルの形式に合わせられる))
   String outputFormat = 'jpg';
 
-  // 変換の進捗状況 (デフォルト: 0%)
+  // 拡大の進捗状況 (デフォルト: 0%)
   double progress = 0;
+
+  // 拡大処理を実行中かどうか
+  bool isProcessing = false;
 
   void updateOutputFileName() {
 
@@ -301,7 +304,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   child: ElevatedButton(
                     child: Text('拡大開始', style: TextStyle(fontSize: 20)),
                     // 拡大開始ボタンが押されたとき
-                    onPressed: () async {
+                    // 既に拡大処理を実行中のときはボタンを無効化する (onPressed に null を入れると無効になる)
+                    onPressed: isProcessing ? null : () async {
 
                       // バリデーション
                       if (inputFile == null) {
@@ -332,6 +336,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // プログレスバーを一旦 0% に戻す
                       setState(() {
                         progress = 0;
+                        isProcessing = true;
                       });
 
                       // realesrgan-ncnn-vulkan コマンドを実行
@@ -369,6 +374,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // プログレスバーを 100% に設定
                       setState(() {
                         progress = 100;
+                        isProcessing = false;
                       });
 
                       // 終了コードが 0 (=成功)
