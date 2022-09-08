@@ -12,6 +12,8 @@
 
 ## インストール
 
+> **Note** 現時点では Windows 版のみですが、（折角 Flutter で作ったので）近々 macOS 版も公開予定です。
+
 [Releases](https://github.com/tsukumijima/Real-ESRGAN-GUI/releases) から、最新の Real-ESRGAN-GUI をダウンロードしてください。
 
 ダウンロードしたら .zip を適当なフォルダに解凍し、中の `Real-ESRGAN-GUI.exe` をダブルクリックで実行してください。  
