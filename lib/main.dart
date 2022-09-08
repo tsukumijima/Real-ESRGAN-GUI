@@ -308,7 +308,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         return;
                       }
 
-                      // プログレスバーを一旦0%に戻す
+                      // プログレスバーを一旦 0% に戻す
                       progress = 0;
 
                       // realesrgan-ncnn-vulkan コマンドを実行
@@ -343,8 +343,12 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // プロセスの終了を待つ
                       var exitCode = await process.exitCode;
 
+                      // プログレスバーを 100% に設定
+                      progress = 100;
+
                       // 終了コードが0以外ならエラーを表示
                       if (exitCode != 0) {
+                        progress = 0;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: const Text('画像の拡大に失敗しました…'),
                           action: SnackBarAction(
