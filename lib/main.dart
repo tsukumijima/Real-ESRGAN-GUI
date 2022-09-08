@@ -4,8 +4,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:path/path.dart' as path;
+import 'package:window_size/window_size.dart';
 
-void main() {
+void main() async {
+
+  // おまじない
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 最小ウインドウサイズを設定
+  // ref: https://zenn.dev/tris/articles/006c41f9c473a4
+  double minWidth = 1100;
+  double minHeight = 953;
+  setWindowMinSize(Size(minWidth, minHeight));
+
+  // ウインドウの位置と大きさを設定
+  var screen = await getCurrentScreen();
+  var top = (screen!.visibleFrame.height - minHeight) / 2;
+  var left = (screen.visibleFrame.width - minWidth) / 2;
+  setWindowFrame(Rect.fromLTWH(left, top, minWidth, minHeight));
+
+  // ウィンドウタイトルを設定
+  setWindowTitle('Real-ESRGAN-GUI');
+
+  // アプリを起動
   runApp(const RealESRGanGUIApp());
 }
 
@@ -87,7 +108,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 32, left: 24, right: 24),
+            margin: EdgeInsets.only(top: 28, left: 24, right: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
