@@ -13,7 +13,7 @@ void main() async {
 
   // ウインドウの位置と大きさを設定
   double minWidth = 1100;
-  double minHeight = 953;
+  double minHeight = 950;
   var screen = await getCurrentScreen();
   var top = (screen!.visibleFrame.height - minHeight) / 2;
   var left = (screen.visibleFrame.width - minWidth) / 2;
@@ -40,9 +40,9 @@ class RealESRGanGUIApp extends StatelessWidget {
       title: 'Real-ESRGAN-GUI',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        fontFamily: 'Hiragino Sans',
-        snackBarTheme: SnackBarThemeData(
-          contentTextStyle: TextStyle(fontFamily: 'Hiragino Sans'),
+        fontFamily: 'M PLUS 2',
+        snackBarTheme: const SnackBarThemeData(
+          contentTextStyle: TextStyle(fontFamily: 'M PLUS 2'),
         ),
       ),
       home: const MainWindowPage(title: 'Real-ESRGAN-GUI'),
@@ -107,7 +107,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
+        actions: const [
           Center(
             child: Text('version 1.0.0', style: TextStyle(fontSize: 16)),
           ),
@@ -117,7 +117,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 28, left: 24, right: 24),
+            margin: const EdgeInsets.only(top: 28, left: 24, right: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -127,17 +127,17 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     Expanded(
                       child: TextField(
                         controller: inputFileController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: '拡大元の画像ファイル',
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     SizedBox(
                       height: 52,
                       child: ElevatedButton(
-                        child: Text('ファイルを選択', style: TextStyle(fontSize: 16)),
+                        child: const Text('ファイルを選択', style: TextStyle(fontSize: 16)),
                         // ファイル選択ボタンが押されたとき
                         onPressed: () async {
 
@@ -172,18 +172,18 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 TextField(
                   controller: outputFileController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: '保存先のファイル',
                   ),
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 100,
                       child: Text('利用モデル:', style: TextStyle(fontSize: 16))
                     ),
@@ -191,7 +191,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       child: DropdownButtonFormField(
                         decoration: const InputDecoration(border: OutlineInputBorder()),
                         value: modelType,
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             value: 'realesr-animevideov3',
                             child: Text('realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)'),
@@ -217,10 +217,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 100,
                       child: Text('拡大率:', style: TextStyle(fontSize: 16))
                     ),
@@ -228,7 +228,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       child: DropdownButtonFormField(
                         decoration: const InputDecoration(border: OutlineInputBorder()),
                         value: upscaleRatio,
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             value: '4x',
                             child: Text('4倍の解像度に拡大'),
@@ -256,10 +256,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 100,
                       child: Text('保存形式:', style: TextStyle(fontSize: 16))
                     ),
@@ -267,7 +267,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       child: DropdownButtonFormField(
                         decoration: const InputDecoration(border: OutlineInputBorder()),
                         value: outputFormat,
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             value: 'jpg',
                             child: Text('JPEG 形式'),
@@ -296,11 +296,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 24),
               ],
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Column(
             children: [
               Center(
@@ -308,7 +308,6 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   width: 200,
                   height: 54,
                   child: ElevatedButton(
-                    child: Text('拡大開始', style: TextStyle(fontSize: 20)),
                     // 拡大開始ボタンが押されたとき
                     // 既に拡大処理を実行中のときはボタンを無効化する (onPressed に null を入れると無効になる)
                     onPressed: isProcessing ? null : () async {
@@ -348,7 +347,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
                       var executablePath = path.join(
                         path.dirname(Platform.resolvedExecutable),
-                        'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
+                        'data/flutter_assets/assets/bin/realesrgan-ncnn-vulkan.exe',
                       );
                       if (Platform.isMacOS) {
                         executablePath = executablePath.replaceFirst('.exe', '');  // Mac の場合は末尾の .exe を削る
@@ -422,10 +421,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         progress = 0;
                       });
                     },
+                    child: const Text('拡大開始', style: TextStyle(fontSize: 20)),
                   ),
                 ),
               ),
-              SizedBox(height: 28),
+              const SizedBox(height: 24),
               LinearProgressIndicator(
                 value: progress / 100,  // 100 で割った (0~1 の範囲) 値を与える
                 minHeight: 20,
