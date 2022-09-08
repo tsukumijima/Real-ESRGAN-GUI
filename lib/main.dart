@@ -58,6 +58,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 出力形式 (デフォルト: jpg (ただし入力ファイルの形式に合わせられる))
   String outputFormat = 'jpg';
 
+  // 変換の進捗状況 (デフォルト: 0%)
+  double progress = 0;
+
   void updateOutputFileName() {
 
     if (inputFile != null) {
@@ -305,6 +308,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         return;
                       }
 
+                      // プログレスバーを一旦0%に戻す
+                      progress = 0;
+
                       // realesrgan-ncnn-vulkan コマンドを実行
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
                       var process = await Process.start('C:/Applications/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe', [
@@ -323,9 +329,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // 標準エラー出力を受け取ったとき
                       process.stderr.transform(utf8.decoder).forEach((line) {
 
+                        // 22.00% みたいな進捗ログを取得
+                        var progressMatch = RegExp(r'([0-9]+\.[0-9]+)%').firstMatch(line);
 
-
-                        print(line);
+                        // プログレスバーを更新 (進捗ログを取得できたときのみ)
+                        if (progressMatch != null) {
+                          setState(() {
+                            progress = double.parse(progressMatch.group(1) ?? '0');
+                          });
+                        }
                       });
 
                       // プロセスの終了を待つ
@@ -349,7 +361,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
               ),
               SizedBox(height: 28),
               LinearProgressIndicator(
-                value: 0.334,
+                value: progress / 100,  // 100 で割った (0~1 の範囲) 値を与える
                 minHeight: 20,
               ),
             ],
