@@ -339,9 +339,18 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         isProcessing = true;
                       });
 
+                      // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
+                      var executablePath = path.join(
+                        path.dirname(Platform.resolvedExecutable),
+                        'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
+                      );
+                      if (Platform.isMacOS) {
+                        executablePath = executablePath.replaceFirst('.exe', '');  // Mac の場合は末尾の .exe を削る
+                      }
+
                       // realesrgan-ncnn-vulkan コマンドを実行
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
-                      var process = await Process.start('C:/Applications/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe', [
+                      var process = await Process.start(executablePath, [
                         // 拡大元の画像ファイル
                         '-i', inputFile!.path,
                         // 保存先のファイル
