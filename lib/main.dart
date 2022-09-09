@@ -11,20 +11,37 @@ void main() async {
   // おまじない
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ウインドウの位置と大きさを設定
-  // DPI スケール (screen.scaleFactor) に合わせて調整する
+  // スクリーン情報を取得
   var screen = await getCurrentScreen();
-  double minWidth = 730 * screen!.scaleFactor;  // ウインドウの最小幅
-  double minHeight = 634 * screen.scaleFactor;  // ウインドウの最小高
-  double top = (screen.visibleFrame.height - minHeight) / 2;  // 左上を起点にしたウインドウのX座標
-  double left = (screen.visibleFrame.width - minWidth) / 2;  // 左上を起点にしたウインドウのY座標
+
+  // スクリーンの DPI スケールを取得
+  var dpiScale = screen!.scaleFactor;
+
+  // macOS では DPI スケールに関わらず常に1倍で表示する
+  // Windows と DPI スケール周りの扱いが違うのかも…？ 1倍でちょうど良いサイズになる
+  if (Platform.isMacOS) {
+    dpiScale = 1;
+  }
+
+  // ウインドウの最小サイズ
+  // DPI スケールに合わせて調整する (Windows のみ)
+  /// macOS のみ、ウインドウの最小高さから 10px ほど引く
+  /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
+  double minWidth = 730 * dpiScale;
+  double minHeight = (Platform.isMacOS ? 624 : 634) * dpiScale;
+
+  // 左上を起点にしたウインドウのX座標・Y座標
+  double top = (screen.visibleFrame.height - minHeight) / 2;
+  double left = (screen.visibleFrame.width - minWidth) / 2;
+
+  // ウインドウの位置とサイズを設定
   setWindowFrame(Rect.fromLTWH(left, top, minWidth, minHeight));
 
   // 最小ウインドウサイズを設定
   // ref: https://zenn.dev/tris/articles/006c41f9c473a4
   setWindowMinSize(Size(minWidth, minHeight));
 
-  // ウィンドウタイトルを設定
+  // ウィンドウのタイトルを設定
   setWindowTitle('Real-ESRGAN-GUI');
 
   // アプリを起動
