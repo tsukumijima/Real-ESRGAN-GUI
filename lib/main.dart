@@ -257,11 +257,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           ),
                           DropdownMenuItem(
                             value: '3x',
-                            child: Text('3倍の解像度に拡大'),
+                            child: Text('3倍の解像度に拡大 (壊滅的な画像が生成されることがあります)'),
                           ),
                           DropdownMenuItem(
                             value: '2x',
-                            child: Text('2倍の解像度に拡大'),
+                            child: Text('2倍の解像度に拡大 (壊滅的な画像が生成されることがあります)'),
                           ),
                         ],
                         onChanged: (String? value) {
