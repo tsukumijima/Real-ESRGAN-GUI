@@ -103,6 +103,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 拡大処理を実行中かどうか
   bool isProcessing = false;
 
+  // コマンドの実行プロセス
+  late Process process;
+
   void updateOutputFileName() {
 
     if (inputFile != null) {
@@ -328,8 +331,13 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   height: 54,
                   child: ElevatedButton.icon(
                     // 拡大開始ボタンが押されたとき
-                    // 既に拡大処理を実行中のときはボタンを無効化する (onPressed に null を入れると無効になる)
-                    onPressed: isProcessing ? null : () async {
+                    // 既に拡大処理を実行中のときは拡大処理をキャンセルする
+                    onPressed: isProcessing ? () async {
+                        process.kill();
+                        isProcessing = false;
+
+                    // 拡大処理
+                    } : () async {
 
                       // バリデーション
                       if (inputFile == null) {
@@ -383,7 +391,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する
                       // 実行ファイルと同じフォルダでないと models/ 以下の学習済みモデルが読み込めないのかも…？
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
-                      var process = await Process.start(executablePath,
+                      process = await Process.start(executablePath,
                         [
                           // 拡大元の画像ファイル
                           '-i', inputFile!.path,
@@ -421,6 +429,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // realesrgan-ncnn-vulkan の終了を待つ
                       var exitCode = await process.exitCode;
 
+                      // この時点で isProcessing が false になっている場合、キャンセルされたものとして扱う
+                      var isCanceled = false;
+                      if (isProcessing == false) isCanceled = true;
+
                       // プログレスバーを 100% に設定
                       setState(() {
                         progress = 100;
@@ -441,16 +453,31 @@ class _MainWindowPageState extends State<MainWindowPage> {
 
                       // 終了コードが 0 以外 (エラーで失敗)
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('画像の拡大に失敗しました。実行ログ:\n${lines.join('').trim()}'),
-                          duration: const Duration(seconds: 10),  // 10秒間表示
-                          action: SnackBarAction(
-                            label: '閉じる',
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            },
-                          ),
-                        ));
+
+                        // キャンセルの場合
+                        if (isCanceled) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: const Text('画像の拡大をキャンセルしました。'),
+                            action: SnackBarAction(
+                              label: '閉じる',
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              },
+                            ),
+                          ));
+                        // エラーの場合
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('画像の拡大に失敗しました。実行ログ:\n${lines.join('').trim()}'),
+                            duration: const Duration(seconds: 10),  // 10秒間表示
+                            action: SnackBarAction(
+                              label: '閉じる',
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              },
+                            ),
+                          ));
+                        }
                       }
 
                       // プログレスバーを 0% に戻す
@@ -458,8 +485,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         progress = 0;
                       });
                     },
-                    icon: const Icon(Icons.image_rounded),
-                    label: const Text('拡大開始', style: TextStyle(fontSize: 20, height: 1.3)),
+                    icon: Icon(isProcessing ? Icons.cancel : Icons.image_rounded),
+                    label: Text(isProcessing ? 'キャンセル' : '拡大開始', style: const TextStyle(fontSize: 20, height: 1.3)),
+                    style: ButtonStyle(backgroundColor: isProcessing ? MaterialStateProperty.all(const Color(0xFFEE525A)) : null),
                   ),
                 ),
               ),
