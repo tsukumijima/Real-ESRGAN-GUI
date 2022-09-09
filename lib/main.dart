@@ -386,7 +386,6 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       process.stderr.transform(utf8.decoder).forEach((line) {
 
                         // 22.00% みたいな進捗ログを取得
-                        lines.add(line);
                         var progressMatch = RegExp(r'([0-9]+\.[0-9]+)%').firstMatch(line);
 
                         // プログレスバーを更新 (進捗ログを取得できたときのみ)
@@ -394,6 +393,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           setState(() {
                             progress = double.parse(progressMatch.group(1) ?? '0');
                           });
+
+                        // 失敗したときにエラーログを表示するために受け取ったログを貯めておく
+                        } else {
+                          lines.add(line);
                         }
                       });
 
@@ -421,7 +424,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       // 終了コードが 0 以外 (エラーで失敗)
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('画像の拡大に失敗しました…'),
+                          content: Text('画像の拡大に失敗しました。実行ログ:\n${lines.join('').trim()}'),
+                          duration: const Duration(seconds: 10),  // 10秒間表示
                           action: SnackBarAction(
                             label: '閉じる',
                             onPressed: () {
