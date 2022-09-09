@@ -12,11 +12,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ウインドウの位置と大きさを設定
-  double minWidth = 1100;
-  double minHeight = 950;
+  // DPI スケール (screen.scaleFactor) に合わせて調整する
   var screen = await getCurrentScreen();
-  var top = (screen!.visibleFrame.height - minHeight) / 2;
-  var left = (screen.visibleFrame.width - minWidth) / 2;
+  double minWidth = 730 * screen!.scaleFactor;  // ウインドウの最小幅
+  double minHeight = 634 * screen.scaleFactor;  // ウインドウの最小高
+  double top = (screen.visibleFrame.height - minHeight) / 2;  // 左上を起点にしたウインドウのX座標
+  double left = (screen.visibleFrame.width - minWidth) / 2;  // 左上を起点にしたウインドウのY座標
   setWindowFrame(Rect.fromLTWH(left, top, minWidth, minHeight));
 
   // 最小ウインドウサイズを設定
@@ -369,9 +370,11 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       ]);
 
                       // 標準エラー出力を受け取ったとき
+                      List<String> lines = [];  // すべてのログを貯めるリスト
                       process.stderr.transform(utf8.decoder).forEach((line) {
 
                         // 22.00% みたいな進捗ログを取得
+                        lines.add(line);
                         var progressMatch = RegExp(r'([0-9]+\.[0-9]+)%').firstMatch(line);
 
                         // プログレスバーを更新 (進捗ログを取得できたときのみ)
