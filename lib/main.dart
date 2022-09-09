@@ -130,7 +130,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
         title: Text(widget.title),
         actions: const [
           Center(
-            child: Text('version 1.0.0', style: TextStyle(fontSize: 16)),
+            child: Text('version 1.1.0', style: TextStyle(fontSize: 16)),
           ),
           SizedBox(width: 16),
         ],

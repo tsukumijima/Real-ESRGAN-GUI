@@ -1,7 +1,7 @@
 
 # Real-ESRGAN-GUI
 
-<img width="600" src="https://user-images.githubusercontent.com/39271166/189219130-61d1f864-9200-4fe5-ae75-59b2b2e4e84f.png">
+<img width="600" src="https://user-images.githubusercontent.com/39271166/189376465-845ecfc0-3d08-4da3-8632-b2ed7ea9b6d9.png">
 
 -----
 
@@ -11,8 +11,6 @@
 かんたんにきれいな UI で作れる [Flutter](https://flutter.dev/) 最高！
 
 ## インストール
-
-> **Note** 現時点では Windows 版のみですが、（折角 Flutter で作ったので）近々 macOS 版も公開予定です。
 
 ### Windows
 
@@ -28,6 +26,19 @@ GPU には [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn
 
 ダウンロードが終わったら `Real-ESRGAN-GUI-(バージョン)-windows.zip` を適当なフォルダに解凍し、中の `Real-ESRGAN-GUI.exe` をダブルクリックします。  
 適宜ショートカットをデスクトップに作成してみても良いでしょう。
+
+### macOS
+
+Intel Mac と Apple Silicon (M1, M2) の両方に対応している…はずですが、今のところ Intel Mac でしか動作確認はしていません。  
+[Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) は Apple Silicon にも対応しているようなので、動くとは思います。
+
+<img width="600" src="https://user-images.githubusercontent.com/39271166/189374416-15501eeb-41ba-452c-bef3-402dc450f31d.png">
+
+[Releases](https://github.com/tsukumijima/Real-ESRGAN-GUI/releases) ページから、最新の Real-ESRGAN-GUI をダウンロードします。  
+`Real-ESRGAN-GUI-(バージョン)-macos.zip` をダウンロードしてください。
+
+ダウンロードが終わったら `Real-ESRGAN-GUI-(バージョン)-macos.zip` を解凍し、中の `Real-ESRGAN-GUI.app` をアプリケーションフォルダに移動します。  
+その後、`Real-ESRGAN-GUI.app` をダブルクリックしてください。
 
 ## 使い方
 
