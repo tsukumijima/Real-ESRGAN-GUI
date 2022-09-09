@@ -27,7 +27,7 @@ void main() async {
   // DPI スケールに合わせて調整する (Windows のみ)
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
-  double minWidth = 730 * dpiScale;
+  double minWidth = 750 * dpiScale;
   double minHeight = (Platform.isMacOS ? 624 : 634) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
@@ -154,7 +154,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     const SizedBox(width: 16),
                     SizedBox(
                       height: 52,
-                      child: ElevatedButton(
+                      child: ElevatedButton.icon(
                         // ファイル選択ボタンが押されたとき
                         onPressed: () async {
 
@@ -185,7 +185,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             });
                           }
                         },
-                        child: const Text('ファイルを選択', style: TextStyle(fontSize: 16)),
+                        icon: const Icon(Icons.file_open_rounded),
+                        label: const Text('ファイルを選択', style: TextStyle(fontSize: 16, height: 1.3)),
                       ),
                     ),
                   ],
@@ -325,7 +326,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                 child: SizedBox(
                   width: 200,
                   height: 54,
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
                     // 拡大開始ボタンが押されたとき
                     // 既に拡大処理を実行中のときはボタンを無効化する (onPressed に null を入れると無効になる)
                     onPressed: isProcessing ? null : () async {
@@ -457,7 +458,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         progress = 0;
                       });
                     },
-                    child: const Text('拡大開始', style: TextStyle(fontSize: 20)),
+                    icon: const Icon(Icons.image_rounded),
+                    label: const Text('拡大開始', style: TextStyle(fontSize: 20, height: 1.3)),
                   ),
                 ),
               ),
