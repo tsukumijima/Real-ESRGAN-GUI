@@ -155,7 +155,6 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     SizedBox(
                       height: 52,
                       child: ElevatedButton(
-                        child: const Text('ファイルを選択', style: TextStyle(fontSize: 16)),
                         // ファイル選択ボタンが押されたとき
                         onPressed: () async {
 
@@ -186,6 +185,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             });
                           }
                         },
+                        child: const Text('ファイルを選択', style: TextStyle(fontSize: 16)),
                       ),
                     ),
                   ],
