@@ -345,12 +345,19 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       });
 
                       // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
-                      var executablePath = path.join(
-                        path.dirname(Platform.resolvedExecutable),
-                        'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
-                      );
-                      if (Platform.isMacOS) {
-                        executablePath = executablePath.replaceFirst('.exe', '');  // Mac の場合は末尾の .exe を削る
+                      String executablePath = '';
+                      if (Platform.isWindows) {
+                        // Windows: Real-ESRGAN-GUI/data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe
+                        executablePath = path.join(
+                          path.dirname(Platform.resolvedExecutable),
+                          'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
+                        );
+                      } else if (Platform.isMacOS) {
+                        // macOS: Real-ESRGAN-GUI.app/Contents/Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan
+                        executablePath = path.join(
+                          path.dirname(Platform.resolvedExecutable).replaceAll('MacOS', ''),
+                          'Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan',
+                        );
                       }
 
                       // realesrgan-ncnn-vulkan コマンドを実行
