@@ -14,9 +14,20 @@
 
 > **Note** 現時点では Windows 版のみですが、（折角 Flutter で作ったので）近々 macOS 版も公開予定です。
 
-[Releases](https://github.com/tsukumijima/Real-ESRGAN-GUI/releases) から、最新の Real-ESRGAN-GUI をダウンロードしてください。
+### Windows
 
-ダウンロードしたら .zip を適当なフォルダに解凍し、中の `Real-ESRGAN-GUI.exe` をダブルクリックで実行してください。  
+Windows 10 以降の 64bit OS にのみ対応しています。Windows 8 以前と、32bit OS は対応していません。
+
+GPU には [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) 同様に、Intel Graphics・NVIDIA GPU・AMD GPU が利用できます。  
+うまく動かないときは、GPU のドライバーをアップグレードすると動くようになることがあるみたいです。
+
+<img width="600" src="https://user-images.githubusercontent.com/39271166/189310933-c0767313-faf7-417e-aed1-b6196c367379.png">
+
+[Releases](https://github.com/tsukumijima/Real-ESRGAN-GUI/releases) ページから、最新の Real-ESRGAN-GUI をダウンロードします。  
+`Real-ESRGAN-GUI-(バージョン)-windows.zip` をダウンロードしてください。
+
+ダウンロードが終わったら `Real-ESRGAN-GUI-(バージョン)-windows.zip` を適当なフォルダに解凍し、中の `Real-ESRGAN-GUI.exe` をダブルクリックします。  
+適宜ショートカットをデスクトップに作成してみても良いでしょう。
 
 ## 使い方
 
@@ -28,6 +39,22 @@
 
 `realesrgan-x4plus-anime` は、`realesr-animevideov3` での出来栄えに満足できなかったときに試してみると良さそうです。  
 より解像感のある仕上がりになりますが、その分 `realesr-animevideov3` よりも細かい塗りなどのディティールが失われがちに見えます（とはいえ、拡大してみなければ違いがわからないレベルだとは思います）。
+
+## トラブルシューティング
+
+### 「MSVCP140.dll が見つからないため、コードの実行を継続できません」というエラーが表示されて起動できない
+
+[Visual C++ 再頒布可能パッケージ 2015-2022](https://docs.microsoft.com/ja-jp/cpp/windows/latest-supported-vc-redist?view=msvc-170) のインストールが必要です。  
+[vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe) をダウンロード後、ダウンロードした `vc_redist.x64.exe` をダブルクリックしてインストールしてください。
+
+インストール後にもう一度 `Real-ESRGAN-GUI.exe` をダブルクリックすると、ちゃんと起動できるはずです。
+
+### 拡大率を [2倍の解像度に拡大] [3倍の解像度に拡大] に設定すると、生成された画像が壊滅する
+
+おそらくバックエンドで利用している [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) のバグ or 仕様です。こちらではどうしようもありません…。  
+なお、ちゃんと2倍の解像度に拡大できることもあります。フル HD などの元々解像度が高い画像を Real-ESRGAN に掛けると起こりやすい印象です。
+
+元々4倍に拡大することを前提に開発されているようなので、うまくいかないときは [4倍の解像度に拡大] に設定してから、適宜画像編集ソフトなどでリサイズしてみてください。
 
 ## License
 
