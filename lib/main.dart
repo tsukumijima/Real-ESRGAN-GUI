@@ -361,19 +361,24 @@ class _MainWindowPageState extends State<MainWindowPage> {
                       }
 
                       // realesrgan-ncnn-vulkan コマンドを実行
+                      // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する
+                      // 実行ファイルと同じフォルダでないと models/ 以下の学習済みモデルが読み込めないのかも…？
                       // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
-                      var process = await Process.start(executablePath, [
-                        // 拡大元の画像ファイル
-                        '-i', inputFile!.path,
-                        // 保存先のファイル
-                        '-o', outputFileController.text,
-                        // 利用モデル
-                        '-n', modelType,
-                        // 拡大率 (4x の x は除く)
-                        '-s', upscaleRatio.replaceAll('x', ''),
-                        // 保存形式
-                        '-f', outputFormat,
-                      ]);
+                      var process = await Process.start(executablePath,
+                        [
+                          // 拡大元の画像ファイル
+                          '-i', inputFile!.path,
+                          // 保存先のファイル
+                          '-o', outputFileController.text,
+                          // 利用モデル
+                          '-n', modelType,
+                          // 拡大率 (4x の x は除く)
+                          '-s', upscaleRatio.replaceAll('x', ''),
+                          // 保存形式
+                          '-f', outputFormat,
+                        ],
+                        workingDirectory: path.dirname(executablePath),
+                      );
 
                       // 標準エラー出力を受け取ったとき
                       process.stderr.transform(utf8.decoder).forEach((line) {
