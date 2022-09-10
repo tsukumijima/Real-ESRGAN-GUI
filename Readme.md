@@ -5,7 +5,7 @@
 
 -----
 
-[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) の NCNN (Vulkan) 実装である、[Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) という CLI ツールのかんたんな GUI ラッパーです。
+[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) の NCNN (Vulkan) 実装である、[realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) という CLI ツールのかんたんな GUI ラッパーです。
 
 [Flutter on Desktop](https://flutter.dev/multi-platform/desktop) を使って突貫で合計5～6時間くらいで作りました。  
 かんたんにきれいな UI で作れる [Flutter](https://flutter.dev/) 最高！
@@ -16,7 +16,7 @@
 
 Windows 10 以降の 64bit OS にのみ対応しています。Windows 8 以前と、32bit OS は対応していません。
 
-GPU には [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) 同様に、Intel Graphics・NVIDIA GPU・AMD GPU が利用できます。  
+GPU には [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) 同様に、Intel Graphics・NVIDIA GPU・AMD GPU が利用できます。  
 うまく動かないときは、GPU のドライバーをアップグレードすると動くようになることがあるみたいです。
 
 <img width="600" src="https://user-images.githubusercontent.com/39271166/189310933-c0767313-faf7-417e-aed1-b6196c367379.png">
@@ -30,7 +30,7 @@ GPU には [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn
 ### macOS
 
 Intel Mac と Apple Silicon (M1, M2) の両方に対応している…はずですが、今のところ Intel Mac でしか動作確認はしていません。  
-[Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) は Apple Silicon にも対応しているようなので、動くとは思います。
+[realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) は Apple Silicon にも対応しているようなので、動くとは思います。
 
 <img width="600" src="https://user-images.githubusercontent.com/39271166/189374416-15501eeb-41ba-452c-bef3-402dc450f31d.png">
 
@@ -62,7 +62,7 @@ Intel Mac と Apple Silicon (M1, M2) の両方に対応している…はずで�
 
 ### 拡大率を [2倍の解像度に拡大] [3倍の解像度に拡大] に設定すると、生成された画像が壊滅する
 
-おそらくバックエンドで利用している [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) のバグ or 仕様です。こちらではどうしようもありません…。  
+おそらくバックエンドで利用している [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) のバグ or 仕様です。こちらではどうしようもありません…。  
 なお、ちゃんと2倍の解像度に拡大できることもあります。フル HD などの元々解像度が高い画像を Real-ESRGAN に掛けると起こりやすい印象です。
 
 元々4倍に拡大することを前提に開発されているようなので、うまくいかないときは [4倍の解像度に拡大] に設定してから、適宜画像編集ソフトなどでリサイズしてみてください。
