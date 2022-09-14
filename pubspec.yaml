@@ -43,6 +43,8 @@ dependencies:
     git:
       url: https://github.com/google/flutter-desktop-embedding
       path: plugins/window_size
+  easy_localization: ^3.0.1
+  easy_localization_loader: ^1.0.0
 
 dev_dependencies:
   flutter_test:
