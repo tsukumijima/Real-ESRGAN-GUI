@@ -163,9 +163,9 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     Expanded(
                       child: TextField(
                         controller: inputFileController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: '拡大元の画像ファイル',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: 'label.inputImage'.tr(),
                         ),
                       ),
                     ),
@@ -205,8 +205,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           }
                         },
                         icon: const Icon(Icons.file_open_rounded),
-                        label: const Text('ファイルを選択',
-                            style: TextStyle(fontSize: 16, height: 1.3)),
+                        label: Text('label.imageSelect'.tr(),
+                            style: const TextStyle(fontSize: 16, height: 1.3)),
                       ),
                     ),
                   ],
@@ -214,37 +214,35 @@ class _MainWindowPageState extends State<MainWindowPage> {
                 const SizedBox(height: 28),
                 TextField(
                   controller: outputFileController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: '保存先のファイル',
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'label.outputPath'.tr(),
                   ),
                 ),
                 const SizedBox(height: 28),
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                         width: 100,
-                        child: Text('利用モデル:', style: TextStyle(fontSize: 16))),
+                        child: Text('label.model'.tr(),
+                            style: const TextStyle(fontSize: 16))),
                     Expanded(
                       child: DropdownButtonFormField(
                         decoration:
                             const InputDecoration(border: OutlineInputBorder()),
                         value: modelType,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'realesr-animevideov3',
-                            child: Text(
-                                'realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)'),
+                            child: const Text('model.animevideov3').tr(),
                           ),
                           DropdownMenuItem(
                             value: 'realesrgan-x4plus-anime',
-                            child: Text(
-                                'realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)'),
+                            child: const Text('model.x4plus-anime').tr(),
                           ),
                           DropdownMenuItem(
                             value: 'realesrgan-x4plus',
-                            child: Text(
-                                'realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)'),
+                            child: const Text('model.x4plus').tr(),
                           ),
                         ],
                         onChanged: (String? value) {
@@ -260,26 +258,27 @@ class _MainWindowPageState extends State<MainWindowPage> {
                 const SizedBox(height: 28),
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                         width: 100,
-                        child: Text('拡大率:', style: TextStyle(fontSize: 16))),
+                        child: Text('label.scale'.tr(),
+                            style: const TextStyle(fontSize: 16))),
                     Expanded(
                       child: DropdownButtonFormField(
                         decoration:
                             const InputDecoration(border: OutlineInputBorder()),
                         value: upscaleRatio,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: '4x',
-                            child: Text('4倍の解像度に拡大'),
+                            child: const Text('scale.4x').tr(),
                           ),
                           DropdownMenuItem(
                             value: '3x',
-                            child: Text('3倍の解像度に拡大 (壊滅的な画像が生成されることがあります)'),
+                            child: const Text('scale.3x').tr(),
                           ),
                           DropdownMenuItem(
                             value: '2x',
-                            child: Text('2倍の解像度に拡大 (壊滅的な画像が生成されることがあります)'),
+                            child: const Text('scale.2x').tr(),
                           ),
                         ],
                         onChanged: (String? value) {
@@ -298,26 +297,27 @@ class _MainWindowPageState extends State<MainWindowPage> {
                 const SizedBox(height: 28),
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                         width: 100,
-                        child: Text('保存形式:', style: TextStyle(fontSize: 16))),
+                        child: Text('label.format'.tr(),
+                            style: const TextStyle(fontSize: 16))),
                     Expanded(
                       child: DropdownButtonFormField(
                         decoration:
                             const InputDecoration(border: OutlineInputBorder()),
                         value: outputFormat,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'jpg',
-                            child: Text('JPEG 形式'),
+                            child: const Text('format.jpeg').tr(),
                           ),
                           DropdownMenuItem(
                             value: 'png',
-                            child: Text('PNG 形式'),
+                            child: const Text('format.png').tr(),
                           ),
                           DropdownMenuItem(
                             value: 'webp',
-                            child: Text('WebP 形式'),
+                            child: const Text('format.webp').tr(),
                           ),
                         ],
                         onChanged: (String? value) {
@@ -359,9 +359,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             if (inputFile == null) {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
-                                content: const Text('拡大元の画像ファイルが指定されていません！'),
+                                content:
+                                    const Text('message.noInputImage').tr(),
                                 action: SnackBarAction(
-                                  label: '閉じる',
+                                  label: 'label.close'.tr(),
                                   onPressed: () {
                                     ScaffoldMessenger.of(context)
                                         .hideCurrentSnackBar();
@@ -373,9 +374,10 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             if (outputFileController.text == '') {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
-                                content: const Text('保存先のファイルが指定されていません！'),
+                                content:
+                                    const Text('message.noOutputPath').tr(),
                                 action: SnackBarAction(
-                                  label: '閉じる',
+                                  label: 'label.close'.tr(),
                                   onPressed: () {
                                     ScaffoldMessenger.of(context)
                                         .hideCurrentSnackBar();
@@ -467,11 +469,13 @@ class _MainWindowPageState extends State<MainWindowPage> {
 
                             // 終了コードが 0 (=成功)
                             if (exitCode == 0) {
+                              if (!mounted) return;
+
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
-                                content: const Text('拡大した画像を保存しました。'),
+                                content: const Text('message.completed').tr(),
                                 action: SnackBarAction(
-                                  label: '閉じる',
+                                  label: 'label.close'.tr(),
                                   onPressed: () {
                                     ScaffoldMessenger.of(context)
                                         .hideCurrentSnackBar();
@@ -481,13 +485,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
 
                               // 終了コードが 0 以外 (エラーで失敗)
                             } else {
+                              if (!mounted) return;
+
                               // キャンセルの場合
                               if (isCanceled) {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
-                                  content: const Text('画像の拡大をキャンセルしました。'),
+                                  content: const Text('message.canceled').tr(),
                                   action: SnackBarAction(
-                                    label: '閉じる',
+                                    label: 'label.close'.tr(),
                                     onPressed: () {
                                       ScaffoldMessenger.of(context)
                                           .hideCurrentSnackBar();
@@ -498,12 +504,19 @@ class _MainWindowPageState extends State<MainWindowPage> {
                               } else {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
-                                  content: Text(
-                                      '画像の拡大に失敗しました。実行ログ:\n${lines.join('').trim()}'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        const Text('message.failed').tr(),
+                                        const Text('message.errorLog')
+                                            .tr(args: [lines.join('').trim()]),
+                                      ],
+                                    ),
+                                  ),
                                   duration:
                                       const Duration(seconds: 10), // 10秒間表示
                                   action: SnackBarAction(
-                                    label: '閉じる',
+                                    label: 'label.close'.tr(),
                                     onPressed: () {
                                       ScaffoldMessenger.of(context)
                                           .hideCurrentSnackBar();
@@ -520,7 +533,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
                           },
                     icon:
                         Icon(isProcessing ? Icons.cancel : Icons.image_rounded),
-                    label: Text(isProcessing ? 'キャンセル' : '拡大開始',
+                    label: Text(
+                        isProcessing ? 'label.cancel'.tr() : 'label.start'.tr(),
                         style: const TextStyle(fontSize: 20, height: 1.3)),
                     style: ButtonStyle(
                         backgroundColor: isProcessing

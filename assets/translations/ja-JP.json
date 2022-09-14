@@ -1,0 +1,36 @@
+{
+  "label": {
+    "inputImage": "拡大元の画像ファイル",
+    "outputPath": "保存先のファイル",
+    "imageSelect": "ファイルを選択",
+    "model": "利用モデル:",
+    "scale": "拡大率:",
+    "format": "保存形式:",
+    "start": "拡大開始",
+    "cancel": "キャンセル",
+    "close": "閉じる"
+  },
+  "model": {
+    "animevideov3": "realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)",
+    "x4plus-anime": "realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)",
+    "x4plus": "realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)"
+  },
+  "scale": {
+    "2x": "2倍の解像度に拡大",
+    "3x": "3倍の解像度に拡大 (壊滅的な画像が生成されることがあります)",
+    "4x": "4倍の解像度に拡大 (壊滅的な画像が生成されることがあります)"
+  },
+  "format": {
+    "png": "PNG 形式",
+    "jpeg": "JPEG 形式",
+    "webp": "WebP 形式"
+  },
+  "message": {
+    "completed": "拡大した画像を保存しました。",
+    "canceled": "画像の拡大をキャンセルしました。",
+    "failed": "画像の拡大に失敗しました。",
+    "errorLog": "実行ログ:\n{}",
+    "noInputImage": "拡大元の画像ファイルが指定されていません！",
+    "noOutputPath": "保存先のファイルが指定されていません！"
+  }
+}

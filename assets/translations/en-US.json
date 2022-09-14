@@ -1,0 +1,36 @@
+{
+  "label": {
+    "inputImage": "Original image file",
+    "outputPath": "Output image path",
+    "imageSelect": "Select file",
+    "model": "Model:",
+    "scale": "Scale:",
+    "format": "Format:",
+    "start": "Start scale up",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "model": {
+    "animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
+    "x4plus-anime": "realesrgan-x4plus-anime (for illustratioons: a little slower)",
+    "x4plus": "realesrgan-x4plus (common: slow on Intel Graphics)"
+  },
+  "scale": {
+    "2x": "Scale up to 2x resolution",
+    "3x": "Scale up to 3x resolution",
+    "4x": "Scale up to 4x resolution"
+  },
+  "format": {
+    "png": "PNG (.png)",
+    "jpeg": "JPEG (.jpg)",
+    "webp": "WebP (.webp)"
+  },
+  "message": {
+    "completed": "Image saved successfully.",
+    "canceled": "Canceled scaling up image.",
+    "failed": "Failed to scale up image.",
+    "errorLog": "Log:\n{}",
+    "noInputImage": "Please select an image file.",
+    "noOutputPath": "Please select an output path."
+  }
+}
