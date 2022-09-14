@@ -50,7 +50,11 @@ void main() async {
   runApp(
     // ローカライゼーション
     EasyLocalization(
-        supportedLocales: const [Locale('en', 'US'), Locale('ja', 'JP')],
+        supportedLocales: const [
+          Locale('en', 'US'),
+          Locale('ja', 'JP'),
+          Locale('uk')
+        ],
         path: 'assets/translations',
         fallbackLocale: const Locale('en', 'US'),
         child: const RealESRGanGUIApp()),
