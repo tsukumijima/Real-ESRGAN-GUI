@@ -16,13 +16,13 @@
     "x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
   },
   "scale": {
-    "2x": "Scale up to 2x resolution",
+    "4x": "Scale up to 4x resolution",
     "3x": "Scale up to 3x resolution",
-    "4x": "Scale up to 4x resolution"
+    "2x": "Scale up to 2x resolution"
   },
   "format": {
-    "png": "PNG (.png)",
     "jpeg": "JPEG (.jpg)",
+    "png": "PNG (.png)",
     "webp": "WebP (.webp)"
   },
   "message": {

@@ -32,7 +32,7 @@ void main() async {
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
   double minWidth = 750 * dpiScale;
-  double minHeight = (Platform.isMacOS ? 624 : 634) * dpiScale;
+  double minHeight = (Platform.isMacOS ? 624 : 638) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
   double top = (screen.visibleFrame.height - minHeight) / 2;
