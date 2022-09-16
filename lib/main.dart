@@ -32,7 +32,7 @@ void main() async {
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
   double minWidth = 750 * dpiScale;
-  double minHeight = (Platform.isMacOS ? 624 : 638) * dpiScale;
+  double minHeight = (Platform.isMacOS ? 628 : 638) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
   double top = (screen.visibleFrame.height - minHeight) / 2;
@@ -337,7 +337,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
             children: [
               Center(
                 child: SizedBox(
-                  width: 200,
+                  width: 208,
                   height: 54,
                   child: ElevatedButton.icon(
                     // 拡大開始ボタンが押されたとき
