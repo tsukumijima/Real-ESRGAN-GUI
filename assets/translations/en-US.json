@@ -12,7 +12,7 @@
   },
   "model": {
     "animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
-    "x4plus-anime": "realesrgan-x4plus-anime (for illustratioons: a little slower)",
+    "x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
     "x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
   },
   "scale": {
