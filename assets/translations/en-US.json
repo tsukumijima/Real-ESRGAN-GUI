@@ -1,8 +1,11 @@
 {
   "label": {
     "inputImage": "Original image file",
-    "outputPath": "Output image path",
+    "inputFolder": "Original image folder",
+    "outputFilePath": "Output image file path",
+    "outputFolderPath": "Output image folder path",
     "imageSelect": "Select file",
+    "folderSelect": "Select folder",
     "model": "Model:",
     "scale": "Scale:",
     "format": "Format:",

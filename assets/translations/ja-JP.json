@@ -1,8 +1,11 @@
 {
   "label": {
     "inputImage": "拡大元の画像ファイル",
-    "outputPath": "保存先のファイル",
+    "inputFolder": "拡大元の画像フォルダ",
+    "outputFilePath": "保存先の画像ファイル",
+    "outputFolderPath": "保存先の画像フォルダ",
     "imageSelect": "ファイルを選択",
+    "folderSelect": "フォルダを選択",
     "model": "利用モデル:",
     "scale": "拡大率:",
     "format": "保存形式:",

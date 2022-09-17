@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:path/path.dart' as path;
@@ -32,7 +33,7 @@ void main() async {
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
   double minWidth = 750 * dpiScale;
-  double minHeight = (Platform.isMacOS ? 628 : 638) * dpiScale;
+  double minHeight = (Platform.isMacOS ? 640 : 650) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
   double top = (screen.visibleFrame.height - minHeight) / 2;
@@ -93,7 +94,12 @@ class MainWindowPage extends StatefulWidget {
   State<MainWindowPage> createState() => _MainWindowPageState();
 }
 
-class _MainWindowPageState extends State<MainWindowPage> {
+class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProviderStateMixin {
+
+  // ファイル or フォルダを切り替えるタブのコントローラー
+  late TabController fileOrFolderTabController;
+
+  // ***** ファイル選択タブ *****
 
   // 拡大元の画像ファイル
   XFile? inputFile;
@@ -101,8 +107,21 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 拡大元の画像ファイルフォームのコントローラー
   TextEditingController inputFileController = TextEditingController();
 
-  // 保存先のファイルフォームのコントローラー
+  // 保存先の画像ファイルフォームのコントローラー
   TextEditingController outputFileController = TextEditingController();
+
+  // ***** フォルダ選択タブ *****
+
+  // 拡大元の画像フォルダのパス
+  String? inputFolderPath;
+
+  // 拡大元の画像の入ったフォルダフォームのコントローラー
+  TextEditingController inputFolderController = TextEditingController();
+
+  // 保存先のフォルダフォームのコントローラー
+  TextEditingController outputFolderController = TextEditingController();
+
+  // ***** 出力設定 *****
 
   // モデルの種類 (デフォルト: realesr-animevideov3)
   String modelType = 'realesr-animevideov3';
@@ -113,6 +132,8 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // 保存形式 (デフォルト: jpg (ただし拡大元の画像ファイルの形式に合わせられる))
   String outputFormat = 'jpg';
 
+  // ***** プロセス実行関連 *****
+
   // 拡大の進捗状況 (デフォルト: 0%)
   double progress = 0;
 
@@ -122,9 +143,31 @@ class _MainWindowPageState extends State<MainWindowPage> {
   // コマンドの実行プロセス
   late Process process;
 
-  void updateOutputFileName() {
+  @override
+  void initState() {
+    super.initState();
 
-    if (inputFile != null) {
+    // TabController を初期化し、タブが変更されたときのイベントを定義
+    fileOrFolderTabController = TabController(length: 2, vsync: this);
+    fileOrFolderTabController.addListener((){
+      if (fileOrFolderTabController.index == 0) {
+        // ファイル選択タブに変更されたとき、フォルダ選択タブのフォームをリセットする
+        inputFolderPath = null;
+        inputFolderController.text = '';
+        outputFolderController.text = '';
+      } else if (fileOrFolderTabController.index == 1) {
+        // フォルダ選択タブに変更されたとき、ファイル選択タブのフォームをリセットする
+        inputFile = null;
+        inputFileController.text = '';
+        outputFileController.text = '';
+      }
+    });
+  }
+
+  void updateOutputName() {
+
+    // ファイル選択タブに設定されている & 拡大元の画像ファイルが選択されている
+    if (fileOrFolderTabController.index == 0 && inputFile != null) {
 
       // 保存形式が拡大元の画像ファイルと同じなら、拡張子には拡大元の画像ファイルと同じものを使う
       var extension = outputFormat;
@@ -132,10 +175,18 @@ class _MainWindowPageState extends State<MainWindowPage> {
         extension = path.extension(inputFile!.path).replaceAll('.', '');
       }
 
-      // 保存先のファイルのパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
+      // 保存先の画像ファイルのパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
       // 4x の部分は拡大率によって変わる
       // jpg の部分は保存形式によって変わる
       outputFileController.text = '${path.withoutExtension(inputFile!.path)}-upscale-${upscaleRatio}.${extension}';
+
+    // フォルダ選択タブに設定されている & 拡大元の画像フォルダが選択されている
+    } else if (fileOrFolderTabController.index == 1 && inputFolderPath != null) {
+
+      // 保存先の画像フォルダのパスを (入力画像のフォルダ名)-upscale-4x みたいなのに設定
+      // 4x の部分は拡大率によって変わる
+      // jpg の部分は保存形式によって変わる
+      outputFolderController.text = '${inputFolderPath}-upscale-${upscaleRatio}';
     }
   }
 
@@ -154,70 +205,145 @@ class _MainWindowPageState extends State<MainWindowPage> {
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 28, left: 24, right: 24),
+            margin: const EdgeInsets.only(top: 12, left: 24, right: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  children: [
-                    // Expanded で挟まないとエラーになる
-                    Expanded(
-                      child: TextField(
-                        controller: inputFileController,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: 'label.inputImage'.tr(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        // ファイル選択ボタンが押されたとき
-                        onPressed: () async {
-
-                          // 選択を許可する拡張子の一覧
-                          final imageTypeGroup = XTypeGroup(
-                            label: 'images',
-                            extensions: <String>['jpg', 'jpeg', 'png', 'webp'],
-                          );
-
-                          // ファイルピッカーを開き、選択されたファイルを格納
-                          inputFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypeGroup]);
-
-                          // もし拡大元の画像ファイルが入っていれば、フォームにファイルパスを設定
-                          if (inputFile != null) {
-                            setState(() {
-
-                              // 拡大元の画像ファイルフォームのテキストを更新
-                              inputFileController.text = inputFile!.path;
-
-                              // 保存形式を拡大元の画像ファイルの拡張子から取得
-                              // 拡張子が .jpeg だった場合も jpg に統一する
-                              outputFormat = path.extension(inputFile!.path).replaceAll('.', '').toLowerCase();
-                              if (outputFormat == 'jpeg') outputFormat = 'jpg';
-
-                              // 保存先のファイルフォームのテキストを更新
-                              updateOutputFileName();
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.file_open_rounded),
-                        label: Text('label.imageSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
-                      ),
-                    ),
+                TabBar(
+                  controller: fileOrFolderTabController,
+                  tabs: const [
+                    Tab(child: Text('ファイル選択', style: TextStyle(color: Colors.green, fontSize: 16))),
+                    Tab(child: Text('フォルダ選択（一括処理）', style: TextStyle(color: Colors.green, fontSize: 16))),
                   ],
                 ),
-                const SizedBox(height: 28),
-                TextField(
-                  controller: outputFileController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'label.outputPath'.tr(),
+                SizedBox(
+                  height: 154,
+                  child: TabBarView(
+                    controller: fileOrFolderTabController,
+                    children: [
+                      Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              // Expanded で挟まないとエラーになる
+                              Expanded(
+                                child: TextField(
+                                  readOnly: true,
+                                  controller: inputFileController,
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: 'label.inputImage'.tr(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              SizedBox(
+                                height: 52,
+                                child: ElevatedButton.icon(
+                                  // ファイル選択ボタンが押されたとき
+                                  onPressed: () async {
+
+                                    // 選択を許可する拡張子の一覧
+                                    final imageTypeGroup = XTypeGroup(
+                                      label: 'images',
+                                      extensions: <String>['jpg', 'jpeg', 'png', 'webp'],
+                                    );
+
+                                    // ファイルピッカーを開き、選択されたファイルを格納
+                                    inputFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypeGroup]);
+
+                                    // もし拡大元の画像ファイルが入っていれば、フォームにファイルパスを設定
+                                    if (inputFile != null) {
+                                      setState(() {
+
+                                        // 拡大元の画像ファイルフォームのテキストを更新
+                                        inputFileController.text = inputFile!.path;
+
+                                        // 保存形式を拡大元の画像ファイルの拡張子から取得
+                                        // 拡張子が .jpeg だった場合も jpg に統一する
+                                        outputFormat = path.extension(inputFile!.path).replaceAll('.', '').toLowerCase();
+                                        if (outputFormat == 'jpeg') outputFormat = 'jpg';
+
+                                        // 保存先の画像ファイルフォームのテキストを更新
+                                        updateOutputName();
+                                      });
+                                    }
+                                  },
+                                  icon: const Icon(Icons.file_open_rounded),
+                                  label: Text('label.imageSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: outputFileController,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'label.outputFilePath'.tr(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              // Expanded で挟まないとエラーになる
+                              Expanded(
+                                child: TextField(
+                                  readOnly: true,
+                                  controller: inputFolderController,
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: 'label.inputFolder'.tr(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              SizedBox(
+                                height: 52,
+                                child: ElevatedButton.icon(
+                                  // フォルダ選択ボタンが押されたとき
+                                  onPressed: () async {
+
+                                    // フォルダピッカーを開き、選択されたフォルダのパスを格納
+                                    inputFolderPath = await FilePicker.platform.getDirectoryPath(dialogTitle: '開く');
+
+                                    // もし拡大元の画像フォルダのパスが入っていれば、フォームにフォルダパスを設定
+                                    if (inputFolderPath != null) {
+                                      setState(() {
+
+                                        // 拡大元の画像フォルダフォームのテキストを更新
+                                        inputFolderController.text = inputFolderPath!;
+
+                                        // 保存先の画像フォルダフォームのテキストを更新
+                                        updateOutputName();
+                                      });
+                                    }
+                                  },
+                                  icon: const Icon(Icons.snippet_folder_rounded),
+                                  label: Text('label.folderSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: outputFolderController,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'label.outputFolderPath'.tr(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     SizedBox(
@@ -252,7 +378,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     SizedBox(
@@ -282,15 +408,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             // 拡大率が変更されたらセット
                             upscaleRatio = value ?? '4x';
 
-                            // 保存先のファイルフォームのテキストを更新
-                            updateOutputFileName();
+                            // 保存先の画像ファイル or フォルダフォームのテキストを更新
+                            updateOutputName();
                           });
                         },
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     SizedBox(
@@ -320,15 +446,15 @@ class _MainWindowPageState extends State<MainWindowPage> {
                             // 保存形式が変更されたらセット
                             outputFormat = value ?? 'jpg';
 
-                            // 保存先のファイルフォームのテキストを更新
-                            updateOutputFileName();
+                            // 保存先の画像ファイル or フォルダフォームのテキストを更新
+                            updateOutputName();
                           });
                         },
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -406,7 +532,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                         [
                           // 拡大元の画像ファイル
                           '-i', inputFile!.path,
-                          // 保存先のファイル
+                          // 保存先の画像ファイル
                           '-o', outputFileController.text,
                           // 利用モデル
                           '-n', modelType,
@@ -517,7 +643,7 @@ class _MainWindowPageState extends State<MainWindowPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               LinearProgressIndicator(
                 value: progress / 100,  // 100 で割った (0~1 の範囲) 値を与える
                 minHeight: 20,
