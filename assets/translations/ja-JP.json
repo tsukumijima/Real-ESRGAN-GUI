@@ -1,9 +1,9 @@
 {
   "label": {
-    "inputImage": "拡大元の画像ファイル",
+    "inputFile": "拡大元の画像ファイル",
     "inputFolder": "拡大元の画像フォルダ",
-    "outputFilePath": "保存先の画像ファイル",
-    "outputFolderPath": "保存先の画像フォルダ",
+    "outputFilePath": "保存先のファイルパス",
+    "outputFolderPath": "保存先のフォルダパス",
     "imageSelect": "ファイルを選択",
     "folderSelect": "フォルダを選択",
     "model": "利用モデル:",
@@ -33,7 +33,10 @@
     "canceled": "画像の拡大をキャンセルしました。",
     "failed": "画像の拡大に失敗しました。",
     "errorLog": "実行ログ:\n{}",
-    "noInputImage": "拡大元の画像ファイルが指定されていません！",
-    "noOutputPath": "保存先のファイルが指定されていません！"
+    "noInputFile": "拡大元の画像ファイルが指定されていません！",
+    "noInputFolder": "拡大元の画像フォルダが指定されていません！",
+    "noOutputFilePath": "保存先のファイルパスが指定されていません！",
+    "noOutputFolderPath": "保存先のフォルダパスが指定されていません！",
+    "noImageFilesInFolder": "指定されたフォルダの中に画像ファイルが見つかりませんでした。"
   }
 }

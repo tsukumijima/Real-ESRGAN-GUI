@@ -1,6 +1,6 @@
 {
   "label": {
-    "inputImage": "Original image file",
+    "inputFile": "Original image file",
     "inputFolder": "Original image folder",
     "outputFilePath": "Output image file path",
     "outputFolderPath": "Output image folder path",
@@ -33,7 +33,10 @@
     "canceled": "Canceled scaling up image.",
     "failed": "Failed to scale up image.",
     "errorLog": "Log:\n{}",
-    "noInputImage": "Please select an image file.",
-    "noOutputPath": "Please select an output path."
+    "noInputFile": "Please select an image file.",
+    "noInputFolder": "Please select an image folder.",
+    "noOutputFilePath": "Please select an output file path.",
+    "noOutputFolderPath": "Please select an output folder path.",
+    "noImageFilesInFolder": "No image files were found in the specified folder"
   }
 }
