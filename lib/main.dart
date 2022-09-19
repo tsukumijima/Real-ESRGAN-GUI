@@ -35,7 +35,7 @@ void main() async {
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
   double minWidth = 750 * dpiScale;
-  double minHeight = (Platform.isMacOS ? 640 : 650) * dpiScale;
+  double minHeight = (Platform.isMacOS ? 636 : 646) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
   double top = (screen.visibleFrame.height - minHeight) / 2;
@@ -169,6 +169,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
     });
   }
 
+  /// 保存先のファイル/フォルダパスを更新する
   void updateOutputName() {
 
     // ファイル選択モード & 拡大元の画像ファイルが選択されている
@@ -180,7 +181,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
         extension = path.extension(inputFile!.path).replaceAll('.', '');
       }
 
-      // 保存先の画像ファイルのパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
+      // 保存先のファイルパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
       // 4x の部分は拡大率によって変わる
       // jpg の部分は保存形式によって変わる
       outputFileController.text = '${path.withoutExtension(inputFile!.path)}-upscale-${upscaleRatio}.${extension}';
@@ -188,11 +189,353 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
     // フォルダ選択モード & 拡大元の画像フォルダが選択されている
     } else if (fileOrFolderTabController.index == 1 && inputFolderPath != null) {
 
-      // 保存先の画像フォルダのパスを (入力画像のフォルダ名)-upscale-4x みたいなのに設定
+      // 保存先のフォルダパスを (入力画像のフォルダ名)-upscale-4x みたいなのに設定
       // 4x の部分は拡大率によって変わる
       // jpg の部分は保存形式によって変わる
       outputFolderController.text = '${inputFolderPath}-upscale-${upscaleRatio}';
     }
+  }
+
+  /// 画像の拡大処理を開始する
+  Future<void> upscaleImage() async {
+
+    // 既に拡大処理を実行中のときは拡大処理をキャンセルする
+    if (isProcessing == true) {
+      process.kill();
+      isProcessing = false;
+      return;
+    }
+
+    // バリデーション (ファイル選択モード)
+    if (fileOrFolderTabController.index == 0) {
+
+      // 入力元ファイルが指定されていない
+      if (inputFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('message.noInputFile').tr(),
+          action: SnackBarAction(
+            label: 'label.close'.tr(),
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ));
+        return;
+      }
+
+      // 出力先ファイルが指定されていない
+      if (outputFileController.text == '') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('message.noOutputFilePath').tr(),
+          action: SnackBarAction(
+            label: 'label.close'.tr(),
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ));
+        return;
+      }
+
+      // 出力先ファイルが既に存在する場合
+      // 上書きするかの確認を取る
+      if (await File(outputFileController.text).exists()) {
+        var overwrite = false;
+        await showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (_) {
+            return AlertDialog(
+              title: const Text('label.overwriteConfirm').tr(),
+              content: const Text('message.overwriteFileConfirm').tr(args: [outputFileController.text]),
+              actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
+              actions: [
+                TextButton(
+                  child: const Text('label.cancel').tr(),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                TextButton(
+                  child: const Text('label.overwriteFile').tr(),
+                  onPressed: () {
+                    overwrite = true;
+                    Navigator.pop(context);
+                  }
+                ),
+              ],
+            );
+          },
+        );
+        // キャンセルされたら実行しない
+        if (overwrite == false) return;
+      }
+
+    // バリデーション (フォルダ選択モード)
+    } else if (fileOrFolderTabController.index == 1) {
+
+      // 入力元フォルダが指定されていない
+      if (inputFolderPath == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('message.noInputFolder').tr(),
+          action: SnackBarAction(
+            label: 'label.close'.tr(),
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ));
+        return;
+      }
+
+      // 出力先ファイルが指定されていない
+      if (outputFolderController.text == '') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('message.noOutputFolderPath').tr(),
+          action: SnackBarAction(
+            label: 'label.close'.tr(),
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ));
+        return;
+      }
+
+      // 出力先フォルダが既に存在する場合
+      // 上書きするかの確認を取る
+      if (await Directory(outputFolderController.text).exists()) {
+        var overwrite = false;
+        await showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (_) {
+            return AlertDialog(
+              title: const Text('label.overwriteConfirm').tr(),
+              content: const Text('message.overwriteFolderConfirm').tr(args: [outputFolderController.text]),
+              actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
+              actions: [
+                TextButton(
+                  child: const Text('label.cancel').tr(),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                TextButton(
+                  child: const Text('label.overwriteFolder').tr(),
+                  onPressed: () {
+                    overwrite = true;
+                    Navigator.pop(context);
+                  }
+                ),
+              ],
+            );
+          },
+        );
+        // キャンセルされたら実行しない
+        if (overwrite == false) return;
+      }
+    }
+
+    // 処理対象の画像ファイルのパスのリスト
+    List<Map<String, String>> imageFiles = [];
+
+    // ファイル選択モードでは、選択されたファイル1つだけを追加する
+    if (fileOrFolderTabController.index == 0) {
+
+      // 入力元ファイルと出力先ファイルをセットで追加
+      // 出力先ファイルにはフォームの値を使う
+      imageFiles.add({'input': inputFile!.path, 'output': outputFileController.text});
+
+      // 出力先ファイルが保存されるフォルダを作成 (すでにある場合は何もしない)
+      await Directory(path.dirname(outputFileController.text)).create(recursive: true);
+
+    // フォルダ選択モードでは、選択されたフォルダ以下の画像ファイル（1階層のみ）すべてを追加する
+    } else if (fileOrFolderTabController.index == 1) {
+
+      // 画像ファイルのみを Glob で取得
+      var glob = Glob('{*.jpg,*.jpeg,*.png,*.webp}');
+      for (var file in glob.listSync(root: inputFolderPath)) {
+
+        // 出力先ファイル名を生成
+        var outputFilePath = path.join(
+          // 出力先フォルダフォームの値
+          outputFolderController.text,
+          // 入力元ファイルの拡張子なしファイル名 + 保存形式 (jpg / png / webp)
+          '${path.basenameWithoutExtension(file.path)}.${outputFormat}',
+        );
+
+        // 入力元ファイルと出力先ファイルをセットで追加
+        imageFiles.add({'input': file.path, 'output': outputFilePath});
+      }
+
+      // この時点でひとつも画像ファイルが見つからなかった場合、エラーを出して終了
+      if (imageFiles.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('message.noImageFilesInFolder').tr(),
+          action: SnackBarAction(
+            label: 'label.close'.tr(),
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ));
+        return;
+      }
+
+      // 出力先フォルダを作成 (すでにある場合は何もしない)
+      await Directory(outputFolderController.text).create(recursive: true);
+    }
+
+    // プログレスバーを一旦 0% に戻す
+    setState(() {
+      progress = 0;
+      isProcessing = true;
+    });
+
+    // 画像ファイル1つごとに何%プログレスバーを進めるかの値
+    // たとえば4つのファイルが処理対象なら、ここには 25 (%) が入る
+    var progressStep = 100 / imageFiles.length;
+
+    // 画像ファイルごとに繰り返す
+    for (var progressIndex = 0; progressIndex < imageFiles.length; progressIndex++) {
+
+      // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
+      String executablePath = '';
+      if (Platform.isWindows) {
+        // Windows: Real-ESRGAN-GUI/data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe
+        executablePath = path.join(
+          path.dirname(Platform.resolvedExecutable),
+          'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
+        );
+      } else if (Platform.isMacOS) {
+        // macOS: Real-ESRGAN-GUI.app/Contents/Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan
+        executablePath = path.join(
+          path.dirname(Platform.resolvedExecutable).replaceAll('MacOS', ''),
+          'Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan',
+        );
+      }
+
+      // realesrgan-ncnn-vulkan コマンドを実行
+      // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する
+      // 実行ファイルと同じフォルダでないと models/ 以下の学習済みモデルが読み込めないのかも…？
+      // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
+      process = await Process.start(executablePath,
+        [
+          // 拡大元の画像ファイル
+          '-i', imageFiles[progressIndex]['input']!,
+          // 保存先の画像ファイル
+          '-o', imageFiles[progressIndex]['output']!,
+          // 利用モデル
+          '-n', modelType,
+          // 拡大率 (4x の x は除く)
+          '-s', upscaleRatio.replaceAll('x', ''),
+          // 保存形式
+          '-f', outputFormat,
+        ],
+        workingDirectory: path.dirname(executablePath),
+      );
+
+      // 標準エラー出力を受け取ったとき
+      List<String> lines = [];  // すべてのログを貯めるリスト
+      process.stderr.transform(utf8.decoder).forEach((line) {
+
+        // 22.00% みたいな進捗ログの取得を試みる
+        var progressMatch = RegExp(r'([0-9]+\.[0-9]+)%').firstMatch(line);
+
+        // プログレスバーを更新 (進捗ログを取得できたときのみ)
+        if (progressMatch != null) {
+
+          // 進捗ログを数値としてパースして格納
+          var progressData = double.parse(progressMatch.group(1) ?? '0');
+
+          setState(() {
+            // 完了済みの画像の進捗 + 現在処理中の画像の進捗
+            progress = (progressStep * (progressIndex)) + (progressData / imageFiles.length);
+          });
+
+        // 失敗したときにエラーログを表示するために受け取ったログを貯めておく
+        } else {
+          lines.add(line);
+        }
+      });
+
+      // realesrgan-ncnn-vulkan の終了を待つ
+      var exitCode = await process.exitCode;
+
+      // プロセス終了のこの時点で isProcessing が false になっている場合、以降の処理がキャンセルされたものとして扱う
+      var isCanceled = false;
+      if (isProcessing == false) isCanceled = true;
+
+      // プログレスバーを (progressStep × 完了済みの画像の個数) に設定
+      setState(() {
+        progress = progressStep * (progressIndex + 1);
+      });
+
+      // 終了コードが 0 以外 (エラーで失敗)
+      if (exitCode != 0) {
+
+        // キャンセルの場合のメッセージ
+        if (isCanceled) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text('message.canceled').tr(),
+            action: SnackBarAction(
+              label: 'label.close'.tr(),
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ));
+        // エラーの場合のメッセージ
+        } else {
+
+          // 実行ログを取得し、文字列として連結
+          // もじ実行ログが空のときは、代わりに終了コードを入れる
+          var log = lines.join('').trim();
+          if (log == '') log = 'exit code: ${exitCode}';
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Text('message.failed').tr(),
+                  const Text('message.errorLog').tr(args: [log]),
+                ],
+              ),
+            ),
+            duration: const Duration(seconds: 10),  // 10秒間表示
+            action: SnackBarAction(
+              label: 'label.close'.tr(),
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ));
+        }
+
+        // プログレスバーを 0% に戻す
+        setState(() {
+          progress = 0;
+          isProcessing = false;
+        });
+
+        // 実行を中断
+        return;
+      }
+    }
+
+    // 完了した旨を表示する
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text('message.completed').tr(),
+      action: SnackBarAction(
+        label: 'label.close'.tr(),
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    ));
+
+    // プログレスバーを 0% に戻す
+    setState(() {
+      progress = 0;
+      isProcessing = false;
+    });
   }
 
   @override
@@ -210,7 +553,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 12, left: 24, right: 24),
+            margin: const EdgeInsets.only(top: 4, left: 24, right: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -222,13 +565,13 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                   ],
                 ),
                 SizedBox(
-                  height: 154,
+                  height: 158,
                   child: TabBarView(
                     controller: fileOrFolderTabController,
                     children: [
                       Column(
                         children: [
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
                           Row(
                             children: [
                               // Expanded で挟まないとエラーになる
@@ -298,7 +641,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                       ),
                       Column(
                         children: [
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
                           Row(
                             children: [
                               // Expanded で挟まないとエラーになる
@@ -482,346 +825,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                   height: 54,
                   child: ElevatedButton.icon(
                     // 拡大開始ボタンが押されたとき
-                    onPressed: () async {
-
-                      // 既に拡大処理を実行中のときは拡大処理をキャンセルする
-                      if (isProcessing == true) {
-                        process.kill();
-                        isProcessing = false;
-                        return;
-                      }
-
-                      // バリデーション (ファイル選択モード)
-                      if (fileOrFolderTabController.index == 0) {
-
-                        // 入力元ファイルが指定されていない
-                        if (inputFile == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: const Text('message.noInputFile').tr(),
-                            action: SnackBarAction(
-                              label: 'label.close'.tr(),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                            ),
-                          ));
-                          return;
-                        }
-
-                        // 出力先ファイルが指定されていない
-                        if (outputFileController.text == '') {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: const Text('message.noOutputFilePath').tr(),
-                            action: SnackBarAction(
-                              label: 'label.close'.tr(),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                            ),
-                          ));
-                          return;
-                        }
-
-                        // 出力先ファイルが既に存在する場合
-                        // 上書きするかの確認を取る
-                        if (await File(outputFileController.text).exists()) {
-                          var overwrite = false;
-                          await showDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            builder: (_) {
-                              return AlertDialog(
-                                title: const Text('label.overwriteConfirm').tr(),
-                                content: const Text('message.overwriteFileConfirm').tr(args: [outputFileController.text]),
-                                actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('label.cancel').tr(),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                  TextButton(
-                                    child: const Text('label.overwriteFile').tr(),
-                                    onPressed: () {
-                                      overwrite = true;
-                                      Navigator.pop(context);
-                                    }
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                          // キャンセルされたら実行しない
-                          if (overwrite == false) return;
-                        }
-
-                      // バリデーション (フォルダ選択モード)
-                      } else if (fileOrFolderTabController.index == 1) {
-
-                        // 入力元フォルダが指定されていない
-                        if (inputFolderPath == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: const Text('message.noInputFolder').tr(),
-                            action: SnackBarAction(
-                              label: 'label.close'.tr(),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                            ),
-                          ));
-                          return;
-                        }
-
-                        // 出力先ファイルが指定されていない
-                        if (outputFolderController.text == '') {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: const Text('message.noOutputFolderPath').tr(),
-                            action: SnackBarAction(
-                              label: 'label.close'.tr(),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                            ),
-                          ));
-                          return;
-                        }
-
-                        // 出力先フォルダが既に存在する場合
-                        // 上書きするかの確認を取る
-                        if (await Directory(outputFolderController.text).exists()) {
-                          var overwrite = false;
-                          await showDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            builder: (_) {
-                              return AlertDialog(
-                                title: const Text('label.overwriteConfirm').tr(),
-                                content: const Text('message.overwriteFolderConfirm').tr(args: [outputFolderController.text]),
-                                actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('label.cancel').tr(),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                  TextButton(
-                                    child: const Text('label.overwriteFolder').tr(),
-                                    onPressed: () {
-                                      overwrite = true;
-                                      Navigator.pop(context);
-                                    }
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                          // キャンセルされたら実行しない
-                          if (overwrite == false) return;
-                        }
-                      }
-
-                      // 処理対象の画像ファイルのパスのリスト
-                      List<Map<String, String>> imageFiles = [];
-
-                      // ファイル選択モードでは、選択されたファイル1つだけを追加する
-                      if (fileOrFolderTabController.index == 0) {
-
-                        // 入力元ファイルと出力先ファイルをセットで追加
-                        // 出力先ファイルにはフォームの値を使う
-                        imageFiles.add({'input': inputFile!.path, 'output': outputFileController.text});
-
-                        // 出力先ファイルが保存されるフォルダを作成 (すでにある場合は何もしない)
-                        await Directory(path.dirname(outputFileController.text)).create(recursive: true);
-
-                      // フォルダ選択モードでは、選択されたフォルダ以下の画像ファイル（1階層のみ）すべてを追加する
-                      } else if (fileOrFolderTabController.index == 1) {
-
-                        // 画像ファイルのみを Glob で取得
-                        var glob = Glob('{*.jpg,*.jpeg,*.png,*.webp}');
-                        for (var file in glob.listSync(root: inputFolderPath)) {
-
-                          // 出力先ファイル名を生成
-                          var outputFilePath = path.join(
-                            // 出力先フォルダフォームの値
-                            outputFolderController.text,
-                            // 入力元ファイルの拡張子なしファイル名 + 保存形式 (jpg / png / webp)
-                            '${path.basenameWithoutExtension(file.path)}.${outputFormat}',
-                          );
-
-                          // 入力元ファイルと出力先ファイルをセットで追加
-                          imageFiles.add({'input': file.path, 'output': outputFilePath});
-                        }
-
-                        // この時点でひとつも画像ファイルが見つからなかった場合、エラーを出して終了
-                        if (imageFiles.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: const Text('message.noImageFilesInFolder').tr(),
-                            action: SnackBarAction(
-                              label: 'label.close'.tr(),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                            ),
-                          ));
-                          return;
-                        }
-
-                        // 出力先フォルダを作成 (すでにある場合は何もしない)
-                        await Directory(outputFolderController.text).create(recursive: true);
-                      }
-
-                      // プログレスバーを一旦 0% に戻す
-                      setState(() {
-                        progress = 0;
-                        isProcessing = true;
-                      });
-
-                      // 画像ファイル1つごとに何%プログレスバーを進めるかの値
-                      // たとえば4つのファイルが処理対象なら、ここには 25 (%) が入る
-                      var progressStep = 100 / imageFiles.length;
-
-                      // 画像ファイルごとに繰り返す
-                      for (var progressIndex = 0; progressIndex < imageFiles.length; progressIndex++) {
-
-                        // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
-                        String executablePath = '';
-                        if (Platform.isWindows) {
-                          // Windows: Real-ESRGAN-GUI/data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe
-                          executablePath = path.join(
-                            path.dirname(Platform.resolvedExecutable),
-                            'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
-                          );
-                        } else if (Platform.isMacOS) {
-                          // macOS: Real-ESRGAN-GUI.app/Contents/Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan
-                          executablePath = path.join(
-                            path.dirname(Platform.resolvedExecutable).replaceAll('MacOS', ''),
-                            'Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan',
-                          );
-                        }
-
-                        // realesrgan-ncnn-vulkan コマンドを実行
-                        // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する
-                        // 実行ファイルと同じフォルダでないと models/ 以下の学習済みモデルが読み込めないのかも…？
-                        // ref: https://api.dart.dev/stable/2.18.0/dart-io/Process-class.html
-                        process = await Process.start(executablePath,
-                          [
-                            // 拡大元の画像ファイル
-                            '-i', imageFiles[progressIndex]['input']!,
-                            // 保存先の画像ファイル
-                            '-o', imageFiles[progressIndex]['output']!,
-                            // 利用モデル
-                            '-n', modelType,
-                            // 拡大率 (4x の x は除く)
-                            '-s', upscaleRatio.replaceAll('x', ''),
-                            // 保存形式
-                            '-f', outputFormat,
-                          ],
-                          workingDirectory: path.dirname(executablePath),
-                        );
-
-                        // 標準エラー出力を受け取ったとき
-                        List<String> lines = [];  // すべてのログを貯めるリスト
-                        process.stderr.transform(utf8.decoder).forEach((line) {
-
-                          // 22.00% みたいな進捗ログの取得を試みる
-                          var progressMatch = RegExp(r'([0-9]+\.[0-9]+)%').firstMatch(line);
-
-                          // プログレスバーを更新 (進捗ログを取得できたときのみ)
-                          if (progressMatch != null) {
-
-                            // 進捗ログを数値としてパースして格納
-                            var progressData = double.parse(progressMatch.group(1) ?? '0');
-
-                            setState(() {
-                              // 完了済みの画像の進捗 + 現在処理中の画像の進捗
-                              progress = (progressStep * (progressIndex)) + (progressData / imageFiles.length);
-                            });
-
-                          // 失敗したときにエラーログを表示するために受け取ったログを貯めておく
-                          } else {
-                            lines.add(line);
-                          }
-                        });
-
-                        // realesrgan-ncnn-vulkan の終了を待つ
-                        var exitCode = await process.exitCode;
-
-                        // プロセス終了のこの時点で isProcessing が false になっている場合、以降の処理がキャンセルされたものとして扱う
-                        var isCanceled = false;
-                        if (isProcessing == false) isCanceled = true;
-
-                        // プログレスバーを (progressStep × 完了済みの画像の個数) に設定
-                        setState(() {
-                          progress = progressStep * (progressIndex + 1);
-                        });
-
-                        // 終了コードが 0 以外 (エラーで失敗)
-                        if (exitCode != 0) {
-
-                          // キャンセルの場合のメッセージ
-                          if (isCanceled) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: const Text('message.canceled').tr(),
-                              action: SnackBarAction(
-                                label: 'label.close'.tr(),
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                },
-                              ),
-                            ));
-                          // エラーの場合のメッセージ
-                          } else {
-
-                            // 実行ログを取得し、文字列として連結
-                            // もじ実行ログが空のときは、代わりに終了コードを入れる
-                            var log = lines.join('').trim();
-                            if (log == '') log = 'exit code: ${exitCode}';
-
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    const Text('message.failed').tr(),
-                                    const Text('message.errorLog').tr(args: [log]),
-                                  ],
-                                ),
-                              ),
-                              duration: const Duration(seconds: 10),  // 10秒間表示
-                              action: SnackBarAction(
-                                label: 'label.close'.tr(),
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                },
-                              ),
-                            ));
-                          }
-
-                          // プログレスバーを 0% に戻す
-                          setState(() {
-                            progress = 0;
-                            isProcessing = false;
-                          });
-
-                          // 実行を中断
-                          return;
-                        }
-                      }
-
-                      // 完了した旨を表示する
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: const Text('message.completed').tr(),
-                        action: SnackBarAction(
-                          label: 'label.close'.tr(),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          },
-                        ),
-                      ));
-
-                      // プログレスバーを 0% に戻す
-                      setState(() {
-                        progress = 0;
-                        isProcessing = false;
-                      });
-                    },
+                    onPressed: upscaleImage,
                     icon: Icon(isProcessing ? Icons.cancel : Icons.image_rounded),
                     label: Text(isProcessing ? 'label.cancel'.tr() : 'label.start'.tr(), style: const TextStyle(fontSize: 20, height: 1.3)),
                     style: ButtonStyle(backgroundColor: isProcessing ? MaterialStateProperty.all(const Color(0xFFEE525A)) : null),
