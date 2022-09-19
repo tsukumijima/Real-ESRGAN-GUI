@@ -10,6 +10,8 @@ import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 
+const String VERSION = '1.1.0';
+
 void main() async {
 
   // おまじない
@@ -545,7 +547,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
         title: Text(widget.title),
         actions: const [
           Center(
-            child: Text('version 1.1.0', style: TextStyle(fontSize: 16)),
+            child: Text('version ${VERSION}', style: TextStyle(fontSize: 16)),
           ),
           SizedBox(width: 16),
         ],
