@@ -522,7 +522,37 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                           return;
                         }
 
-                        // TODO: 出力先ファイルが既に存在する場合の上書きバリデーション
+                        // 出力先ファイルが既に存在する場合
+                        // 上書きするかの確認を取る
+                        if (await File(outputFileController.text).exists()) {
+                          var overwrite = false;
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: const Text('label.overwriteConfirm').tr(),
+                                content: const Text('message.overwriteFileConfirm').tr(args: [outputFileController.text]),
+                                actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('label.cancel').tr(),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  TextButton(
+                                    child: const Text('label.overwriteFile').tr(),
+                                    onPressed: () {
+                                      overwrite = true;
+                                      Navigator.pop(context);
+                                    }
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          // キャンセルされたら実行しない
+                          if (overwrite == false) return;
+                        }
 
                       // バリデーション (フォルダ選択モード)
                       } else if (fileOrFolderTabController.index == 1) {
@@ -553,6 +583,38 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                             ),
                           ));
                           return;
+                        }
+
+                        // 出力先フォルダが既に存在する場合
+                        // 上書きするかの確認を取る
+                        if (await Directory(outputFolderController.text).exists()) {
+                          var overwrite = false;
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: const Text('label.overwriteConfirm').tr(),
+                                content: const Text('message.overwriteFolderConfirm').tr(args: [outputFolderController.text]),
+                                actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('label.cancel').tr(),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  TextButton(
+                                    child: const Text('label.overwriteFolder').tr(),
+                                    onPressed: () {
+                                      overwrite = true;
+                                      Navigator.pop(context);
+                                    }
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          // キャンセルされたら実行しない
+                          if (overwrite == false) return;
                         }
                       }
 

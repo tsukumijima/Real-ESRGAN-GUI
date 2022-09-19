@@ -11,7 +11,10 @@
     "format": "保存形式:",
     "start": "拡大開始",
     "cancel": "キャンセル",
-    "close": "閉じる"
+    "close": "閉じる",
+    "overwriteConfirm": "上書きの確認",
+    "overwriteFile": "ファイルを上書き",
+    "overwriteFolder": "フォルダを上書き"
   },
   "model": {
     "animevideov3": "realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)",
@@ -37,6 +40,8 @@
     "noInputFolder": "拡大元の画像フォルダが指定されていません！",
     "noOutputFilePath": "保存先のファイルパスが指定されていません！",
     "noOutputFolderPath": "保存先のフォルダパスが指定されていません！",
+    "overwriteFileConfirm": "保存先のファイル \"{}\" はすでに存在します。\n本当にファイルを上書きしますか？",
+    "overwriteFolderConfirm": "保存先のフォルダ \"{}\" はすでに存在します。\n保存先のフォルダ内にあるファイルが上書きされる可能性があります。本当にフォルダを上書きしますか？",
     "noImageFilesInFolder": "指定されたフォルダの中に画像ファイルが見つかりませんでした。"
   }
 }

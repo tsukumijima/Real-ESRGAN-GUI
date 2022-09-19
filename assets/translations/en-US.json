@@ -11,7 +11,10 @@
     "format": "Format:",
     "start": "Start scale up",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "overwriteConfirm": "Overwriting Confirmation",
+    "overwriteFile": "Overwrite file",
+    "overwriteFolder": "Overwrite folder"
   },
   "model": {
     "animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
@@ -37,6 +40,8 @@
     "noInputFolder": "Please select an image folder.",
     "noOutputFilePath": "Please select an output file path.",
     "noOutputFolderPath": "Please select an output folder path.",
+    "overwriteFileConfirm": "The output file \"{}\" already exists.\nDo you really want to overwrite the file?",
+    "overwriteFolderConfirm": "The output folder \"{}\" already exists.\nFiles in the output folder may be overwritten. Do you really want to overwrite the folder?",
     "noImageFilesInFolder": "No image files were found in the specified folder"
   }
 }
