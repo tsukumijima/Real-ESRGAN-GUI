@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:real_esrgan_gui/components/io_form.dart';
 
+enum UpscaleAlgorithmType {
+  RealESRGAN,
+}
+
 /// 入出力フォームのバリデーションを行う
 Future<bool> validateIOForm({
   required BuildContext context,

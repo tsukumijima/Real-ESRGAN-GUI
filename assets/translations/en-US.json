@@ -17,9 +17,11 @@
     "overwriteFolder": "Overwrite folder"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
-    "x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
-    "x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
+      "realesrgan-x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
+    }
   },
   "scale": {
     "4x": "Scale up to 4x resolution",

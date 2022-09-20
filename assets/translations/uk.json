@@ -17,9 +17,11 @@
     "overwriteFolder": "Перезапис папки"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (для ілюстрації: найстабільніший і найшвидший)",
-    "x4plus-anime": "realesrgan-x4plus-anime (для ілюстрації: трохи повільніше)",
-    "x4plus": "realesrgan-x4plus (Поширені: повільний з Intel Graphics)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (для ілюстрації: найстабільніший і найшвидший)",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (для ілюстрації: трохи повільніше)",
+      "realesrgan-x4plus": "realesrgan-x4plus (Поширені: повільний з Intel Graphics)"
+    }
   },
   "scale": {
     "4x": "Масштабування до 4-кратної роздільної здатності",

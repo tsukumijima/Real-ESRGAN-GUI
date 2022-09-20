@@ -8,6 +8,7 @@ import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 import 'package:real_esrgan_gui/components/io_form.dart';
+import 'package:real_esrgan_gui/components/model_type_dropdown.dart';
 import 'package:real_esrgan_gui/utils.dart';
 
 /// バージョン
@@ -380,36 +381,13 @@ class MainWindowPageState extends State<MainWindowPage> {
                   onOutputFormatChanged: (outputFormat) => setState(() => this.outputFormat = outputFormat),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: Text('label.model'.tr(), style: const TextStyle(fontSize: 16)),
-                    ),
-                    Expanded(
-                      child: DropdownButtonFormField(
-                        decoration: const InputDecoration(border: OutlineInputBorder()),
-                        value: modelType,
-                        items: [
-                          DropdownMenuItem(
-                            value: 'realesr-animevideov3',
-                            child: const Text('model.animevideov3').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: 'realesrgan-x4plus-anime',
-                            child: const Text('model.x4plus-anime').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: 'realesrgan-x4plus',
-                            child: const Text('model.x4plus').tr(),
-                          ),
-                        ],
-                        onChanged: (String? value) {
-                          setState(() => modelType = value ?? 'realesr-animevideov3');
-                        },
-                      ),
-                    ),
-                  ],
+                ModelTypeDropdownWidget(
+                  upscaleAlgorithmType: UpscaleAlgorithmType.RealESRGAN,
+                  modelTypes: const ['realesr-animevideov3', 'realesrgan-x4plus-anime', 'realesrgan-x4plus'],
+                  defaultModelType: 'realesr-animevideov3',
+                  onChanged: (String? value) {
+                    setState(() => modelType = value!);
+                  },
                 ),
                 const SizedBox(height: 20),
                 Row(
