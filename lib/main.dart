@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:glob/glob.dart';
-import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
 import 'package:real_esrgan_gui/components/upscale_ratio_dropdown.dart';
 import 'package:window_size/window_size.dart';
@@ -146,7 +144,7 @@ class MainWindowPageState extends State<MainWindowPage> {
   /// 拡大処理を実行中かどうか
   bool isProcessing = false;
 
-  /// コマンドの実行プロセス
+  /// コマンドの実行プロセスのインスタンス
   late Process process;
 
   /// 画像の拡大処理を開始する
@@ -172,45 +170,20 @@ class MainWindowPageState extends State<MainWindowPage> {
     if (validateResult == false) return;
 
     // 処理対象の画像ファイルのパスのリスト
-    List<Map<String, String>> imageFiles = [];
+    List<Map<String, String>> imageFiles = await getInputFileWithOutputFilePairList(
+      context: context,
+      ioFormMode: ioFormMode,
+      outputFormat: outputFormat,
+      inputFileController: inputFileController,
+      outputFileController: outputFileController,
+      inputFolderController: inputFolderController,
+      outputFolderController: outputFolderController,
+    );
 
-    // ファイル選択モードでは、選択されたファイル1つだけを追加する
-    if (ioFormMode == IOFormMode.fileSelection) {
-
-      // 入力元ファイルと出力先ファイルをセットで追加
-      // 出力先ファイルにはフォームの値を使う
-      imageFiles.add({'input': inputFileController.text, 'output': outputFileController.text});
-
-      // 出力先ファイルが保存されるフォルダを作成 (すでにある場合は何もしない)
-      await Directory(path.dirname(outputFileController.text)).create(recursive: true);
-
-    // フォルダ選択モードでは、選択されたフォルダ以下の画像ファイル（1階層のみ）すべてを追加する
-    } else if (ioFormMode == IOFormMode.folderSelection) {
-
-      // 画像ファイルのみを Glob で取得
-      var glob = Glob('{*.jpg,*.jpeg,*.png,*.webp}');
-      for (var file in glob.listSync(root: inputFolderController.text)) {
-
-        // 出力先ファイル名を生成
-        var outputFilePath = path.join(
-          // 出力先フォルダフォームの値
-          outputFolderController.text,
-          // 入力元ファイルの拡張子なしファイル名 + 保存形式 (jpg / png / webp)
-          '${path.basenameWithoutExtension(file.path)}.${outputFormat}',
-        );
-
-        // 入力元ファイルと出力先ファイルをセットで追加
-        imageFiles.add({'input': file.path, 'output': outputFilePath});
-      }
-
-      // この時点でひとつも画像ファイルが見つからなかった場合、エラーを出して終了
-      if (imageFiles.isEmpty) {
-        showSnackBar(context: context, content: const Text('message.noImageFilesInFolder').tr());
-        return;
-      }
-
-      // 出力先フォルダを作成 (すでにある場合は何もしない)
-      await Directory(outputFolderController.text).create(recursive: true);
+    // 指定されたフォルダにひとつも画像ファイルが見つからなかった場合、エラーを出して終了
+    if (ioFormMode == IOFormMode.folderSelection && imageFiles.isEmpty) {
+      showSnackBar(context: context, content: const Text('message.noImageFilesInFolder').tr());
+      return;
     }
 
     // プログレスバーを一旦 0% に戻す

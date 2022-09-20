@@ -2,6 +2,8 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:glob/glob.dart';
+import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
 import 'package:real_esrgan_gui/components/io_form.dart';
 
@@ -165,6 +167,61 @@ Future<bool> validateIOForm({
 
   // ここまでのバリデーションをすべて通過したときだけ true を返す
   return true;
+}
+
+/// 処理対象の画像ファイルのパスのリスト
+/// 戻り値は入力ファイルと出力ファイルのペアの配列
+Future<List<Map<String, String>>> getInputFileWithOutputFilePairList({
+  required BuildContext context,
+  required IOFormMode ioFormMode,
+  required String outputFormat,
+  required TextEditingController inputFileController,
+  required TextEditingController outputFileController,
+  required TextEditingController inputFolderController,
+  required TextEditingController outputFolderController,
+}) async {
+
+  List<Map<String, String>> imageFiles = [];
+
+  // ファイル選択モードでは、選択されたファイル1つだけを追加する
+  if (ioFormMode == IOFormMode.fileSelection) {
+
+    // 入力元ファイルと出力先ファイルをセットで追加
+    // 出力先ファイルにはフォームの値を使う
+    imageFiles.add({'input': inputFileController.text, 'output': outputFileController.text});
+
+    // 出力先ファイルが保存されるフォルダを作成 (すでにある場合は何もしない)
+    await Directory(path.dirname(outputFileController.text)).create(recursive: true);
+
+  // フォルダ選択モードでは、選択されたフォルダ以下の画像ファイル（1階層のみ）すべてを追加する
+  } else if (ioFormMode == IOFormMode.folderSelection) {
+
+    // 画像ファイルのみを Glob で取得
+    var glob = Glob('{**.jpg,**.jpeg,**.png,**.webp}');
+    for (var file in glob.listSync(root: inputFolderController.text)) {
+
+      // 出力先ファイル名を生成
+      var outputFilePath = path.join(
+        // 出力先フォルダフォームの値
+        outputFolderController.text,
+        // 入力元ファイルのフォルダ名 (入力元フォルダからの相対パス)
+        path.relative(path.dirname(file.path), from: inputFolderController.text),
+        // 入力元ファイルの拡張子なしファイル名 + 保存形式 (jpg / png / webp)
+        '${path.basenameWithoutExtension(file.path)}.${outputFormat}',
+      );
+
+      // 入力元ファイルと出力先ファイルをセットで追加
+      imageFiles.add({'input': file.path, 'output': outputFilePath});
+    }
+
+    // 出力先フォルダを作成 (すでにある場合は何もしない)
+    if (imageFiles.isEmpty == false) {
+      await Directory(outputFolderController.text).create(recursive: true);
+    }
+  }
+
+  print(imageFiles);
+  return imageFiles;
 }
 
 /// 簡単に SnackBar を表示する
