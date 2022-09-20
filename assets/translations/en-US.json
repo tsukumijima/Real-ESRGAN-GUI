@@ -40,6 +40,8 @@
     "noInputFolder": "Please select an image folder.",
     "noOutputFilePath": "Please select an output file path.",
     "noOutputFolderPath": "Please select an output folder path.",
+    "invalidOutputFilePath": "The output file path is invalid.",
+    "invalidOutputFolderPath": "The output folder path is invalid.",
     "overwriteFileConfirm": "The output file \"{}\" already exists.\nDo you really want to overwrite the file?",
     "overwriteFolderConfirm": "The output folder \"{}\" already exists.\nFiles in the output folder may be overwritten. Do you really want to overwrite the folder?",
     "noImageFilesInFolder": "No image files were found in the specified folder"

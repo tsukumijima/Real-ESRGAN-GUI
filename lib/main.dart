@@ -2,15 +2,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:glob/glob.dart';
 import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
+import 'package:real_esrgan_gui/components/io_form.dart';
 import 'package:window_size/window_size.dart';
+import 'package:real_esrgan_gui/utils.dart';
 
-const String VERSION = '1.1.0';
+/// バージョン
+const String version = '1.1.0';
 
 void main() async {
 
@@ -95,18 +96,15 @@ class MainWindowPage extends StatefulWidget {
   final String title;
 
   @override
-  State<MainWindowPage> createState() => _MainWindowPageState();
+  State<MainWindowPage> createState() => MainWindowPageState();
 }
 
-class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProviderStateMixin {
+class MainWindowPageState extends State<MainWindowPage> {
 
-  // ファイル or フォルダを切り替えるタブのコントローラー
-  late TabController fileOrFolderTabController;
+  // 入出力フォームのモード
+  IOFormMode ioFormMode = IOFormMode.fileSelection;
 
   // ***** ファイル選択モード *****
-
-  /// 拡大元の画像ファイル
-  XFile? inputFile;
 
   /// 拡大元の画像ファイルフォームのコントローラー
   TextEditingController inputFileController = TextEditingController();
@@ -115,9 +113,6 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
   TextEditingController outputFileController = TextEditingController();
 
   // ***** フォルダ選択モード *****
-
-  /// 拡大元の画像フォルダのパス
-  String? inputFolderPath;
 
   /// 拡大元の画像の入ったフォルダフォームのコントローラー
   TextEditingController inputFolderController = TextEditingController();
@@ -135,7 +130,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
   /// "4x"・"3x"・"2x" のいずれか
   String upscaleRatio = '4x';
 
-  /// 保存形式 (デフォルト: jpg (ただし拡大元の画像ファイルの形式に合わせられる))
+  /// 保存形式 (デフォルト: jpg (ただし既定で選択された拡大元画像の拡張子に変更される))
   /// "jpg"・"png"・"webp" のいずれか
   String outputFormat = 'jpg';
 
@@ -150,54 +145,6 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
   /// コマンドの実行プロセス
   late Process process;
 
-  @override
-  void initState() {
-    super.initState();
-
-    // TabController を初期化し、タブが変更されたときのイベントを定義
-    fileOrFolderTabController = TabController(length: 2, vsync: this);
-    fileOrFolderTabController.addListener((){
-      if (fileOrFolderTabController.index == 0) {
-        // ファイル選択タブに変更されたとき、フォルダ選択タブのフォームをリセットする
-        inputFolderPath = null;
-        inputFolderController.text = '';
-        outputFolderController.text = '';
-      } else if (fileOrFolderTabController.index == 1) {
-        // フォルダ選択タブに変更されたとき、ファイル選択タブのフォームをリセットする
-        inputFile = null;
-        inputFileController.text = '';
-        outputFileController.text = '';
-      }
-    });
-  }
-
-  /// 保存先のファイル/フォルダパスを更新する
-  void updateOutputName() {
-
-    // ファイル選択モード & 拡大元の画像ファイルが選択されている
-    if (fileOrFolderTabController.index == 0 && inputFile != null) {
-
-      // 保存形式が拡大元の画像ファイルと同じなら、拡張子には拡大元の画像ファイルと同じものを使う
-      var extension = outputFormat;
-      if (extension == path.extension(inputFile!.path).toLowerCase().replaceAll('jpeg', 'jpg').replaceAll('.', '')) {
-        extension = path.extension(inputFile!.path).replaceAll('.', '');
-      }
-
-      // 保存先のファイルパスを (入力画像のファイル名)-upscale-4x.jpg みたいなのに設定
-      // 4x の部分は拡大率によって変わる
-      // jpg の部分は保存形式によって変わる
-      outputFileController.text = '${path.withoutExtension(inputFile!.path)}-upscale-${upscaleRatio}.${extension}';
-
-    // フォルダ選択モード & 拡大元の画像フォルダが選択されている
-    } else if (fileOrFolderTabController.index == 1 && inputFolderPath != null) {
-
-      // 保存先のフォルダパスを (入力画像のフォルダ名)-upscale-4x みたいなのに設定
-      // 4x の部分は拡大率によって変わる
-      // jpg の部分は保存形式によって変わる
-      outputFolderController.text = '${inputFolderPath}-upscale-${upscaleRatio}';
-    }
-  }
-
   /// 画像の拡大処理を開始する
   Future<void> upscaleImage() async {
 
@@ -209,33 +156,25 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
     }
 
     // バリデーション (ファイル選択モード)
-    if (fileOrFolderTabController.index == 0) {
+    if (ioFormMode == IOFormMode.fileSelection) {
 
       // 入力元ファイルが指定されていない
-      if (inputFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('message.noInputFile').tr(),
-          action: SnackBarAction(
-            label: 'label.close'.tr(),
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ));
+      if (inputFileController.text == '') {
+        showSnackBar(context: context, content: const Text('message.noInputFile').tr());
         return;
       }
 
       // 出力先ファイルが指定されていない
       if (outputFileController.text == '') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('message.noOutputFilePath').tr(),
-          action: SnackBarAction(
-            label: 'label.close'.tr(),
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ));
+        showSnackBar(context: context, content: const Text('message.noOutputFilePath').tr());
+        return;
+      }
+
+      // 不正なファイルパスでないかの確認
+      try {
+        await Directory(path.dirname(outputFileController.text)).exists();
+      } on FileSystemException {
+        showSnackBar(context: context, content: const Text('message.invalidOutputFilePath').tr());
         return;
       }
 
@@ -272,33 +211,25 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
       }
 
     // バリデーション (フォルダ選択モード)
-    } else if (fileOrFolderTabController.index == 1) {
+    } else if (ioFormMode == IOFormMode.folderSelection) {
 
       // 入力元フォルダが指定されていない
-      if (inputFolderPath == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('message.noInputFolder').tr(),
-          action: SnackBarAction(
-            label: 'label.close'.tr(),
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ));
+      if (inputFolderController.text == '') {
+        showSnackBar(context: context, content: const Text('message.noInputFolder').tr());
         return;
       }
 
       // 出力先ファイルが指定されていない
       if (outputFolderController.text == '') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('message.noOutputFolderPath').tr(),
-          action: SnackBarAction(
-            label: 'label.close'.tr(),
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ));
+        showSnackBar(context: context, content: const Text('message.noOutputFolderPath').tr());
+        return;
+      }
+
+      // 不正なフォルダパスでないかの確認
+      try {
+        await Directory(outputFolderController.text).exists();
+      } on FileSystemException {
+        showSnackBar(context: context, content: const Text('message.invalidOutputFolderPath').tr());
         return;
       }
 
@@ -339,21 +270,21 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
     List<Map<String, String>> imageFiles = [];
 
     // ファイル選択モードでは、選択されたファイル1つだけを追加する
-    if (fileOrFolderTabController.index == 0) {
+    if (ioFormMode == IOFormMode.fileSelection) {
 
       // 入力元ファイルと出力先ファイルをセットで追加
       // 出力先ファイルにはフォームの値を使う
-      imageFiles.add({'input': inputFile!.path, 'output': outputFileController.text});
+      imageFiles.add({'input': inputFileController.text, 'output': outputFileController.text});
 
       // 出力先ファイルが保存されるフォルダを作成 (すでにある場合は何もしない)
       await Directory(path.dirname(outputFileController.text)).create(recursive: true);
 
     // フォルダ選択モードでは、選択されたフォルダ以下の画像ファイル（1階層のみ）すべてを追加する
-    } else if (fileOrFolderTabController.index == 1) {
+    } else if (ioFormMode == IOFormMode.folderSelection) {
 
       // 画像ファイルのみを Glob で取得
       var glob = Glob('{*.jpg,*.jpeg,*.png,*.webp}');
-      for (var file in glob.listSync(root: inputFolderPath)) {
+      for (var file in glob.listSync(root: inputFolderController.text)) {
 
         // 出力先ファイル名を生成
         var outputFilePath = path.join(
@@ -369,15 +300,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
 
       // この時点でひとつも画像ファイルが見つからなかった場合、エラーを出して終了
       if (imageFiles.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('message.noImageFilesInFolder').tr(),
-          action: SnackBarAction(
-            label: 'label.close'.tr(),
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ));
+        showSnackBar(context: context, content: const Text('message.noImageFilesInFolder').tr());
         return;
       }
 
@@ -473,18 +396,11 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
       // 終了コードが 0 以外 (エラーで失敗)
       if (exitCode != 0) {
 
-        // キャンセルの場合のメッセージ
         if (isCanceled) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text('message.canceled').tr(),
-            action: SnackBarAction(
-              label: 'label.close'.tr(),
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-          ));
-        // エラーの場合のメッセージ
+
+          // キャンセルの場合のメッセージ
+          showSnackBar(context: context, content: const Text('message.canceled').tr());
+
         } else {
 
           // 実行ログを取得し、文字列として連結
@@ -492,9 +408,12 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
           var log = lines.join('').trim();
           if (log == '') log = 'exit code: ${exitCode}';
 
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          // エラーの場合のメッセージ
+          showSnackBar(
+            context: context,
             content: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('message.failed').tr(),
                   const Text('message.errorLog').tr(args: [log]),
@@ -502,13 +421,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
               ),
             ),
             duration: const Duration(seconds: 10),  // 10秒間表示
-            action: SnackBarAction(
-              label: 'label.close'.tr(),
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-          ));
+          );
         }
 
         // プログレスバーを 0% に戻す
@@ -523,15 +436,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
     }
 
     // 完了した旨を表示する
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('message.completed').tr(),
-      action: SnackBarAction(
-        label: 'label.close'.tr(),
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
-    ));
+    showSnackBar(context: context, content: const Text('message.completed').tr());
 
     // プログレスバーを 0% に戻す
     setState(() {
@@ -547,7 +452,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
         title: Text(widget.title),
         actions: const [
           Center(
-            child: Text('version ${VERSION}', style: TextStyle(fontSize: 16)),
+            child: Text('version ${version}', style: TextStyle(fontSize: 16)),
           ),
           SizedBox(width: 16),
         ],
@@ -558,150 +463,20 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
             margin: const EdgeInsets.only(top: 4, left: 24, right: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                TabBar(
-                  controller: fileOrFolderTabController,
-                  tabs: const [
-                    Tab(child: Text('ファイル選択', style: TextStyle(color: Colors.green, fontSize: 16))),
-                    Tab(child: Text('フォルダ選択（一括処理）', style: TextStyle(color: Colors.green, fontSize: 16))),
-                  ],
-                ),
-                SizedBox(
-                  height: 158,
-                  child: TabBarView(
-                    controller: fileOrFolderTabController,
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: 24),
-                          Row(
-                            children: [
-                              // Expanded で挟まないとエラーになる
-                              Expanded(
-                                child: TextField(
-                                  readOnly: true,
-                                  controller: inputFileController,
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'label.inputFile'.tr(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              SizedBox(
-                                height: 52,
-                                child: ElevatedButton.icon(
-                                  // ファイル選択ボタンが押されたとき
-                                  onPressed: () async {
-
-                                    // 選択を許可する拡張子の一覧
-                                    final imageTypeGroup = XTypeGroup(
-                                      label: 'images',
-                                      extensions: <String>['jpg', 'jpeg', 'png', 'webp'],
-                                    );
-
-                                    // ファイルピッカーを開き、選択されたファイルを格納
-                                    inputFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypeGroup]);
-
-                                    // もし拡大元の画像ファイルが入っていれば、フォームにファイルパスを設定
-                                    if (inputFile != null) {
-                                      setState(() {
-
-                                        // 拡大元の画像ファイルフォームのテキストを更新
-                                        inputFileController.text = inputFile!.path;
-
-                                        // 保存形式を拡大元の画像ファイルの拡張子から取得
-                                        // 拡張子が .jpeg だった場合も jpg に統一する
-                                        outputFormat = path.extension(inputFile!.path).replaceAll('.', '').toLowerCase();
-                                        if (outputFormat == 'jpeg') outputFormat = 'jpg';
-
-                                        // 保存先の画像ファイルフォームのテキストを更新
-                                        updateOutputName();
-                                      });
-
-                                    // フォルダ選択がキャンセルされたので、フォームをリセット
-                                    } else {
-                                      inputFileController.text = '';
-                                      outputFileController.text = '';
-                                    }
-                                  },
-                                  icon: const Icon(Icons.file_open_rounded),
-                                  label: Text('label.imageSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            controller: outputFileController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: 'label.outputFilePath'.tr(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const SizedBox(height: 24),
-                          Row(
-                            children: [
-                              // Expanded で挟まないとエラーになる
-                              Expanded(
-                                child: TextField(
-                                  readOnly: true,
-                                  controller: inputFolderController,
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'label.inputFolder'.tr(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              SizedBox(
-                                height: 52,
-                                child: ElevatedButton.icon(
-                                  // フォルダ選択ボタンが押されたとき
-                                  onPressed: () async {
-
-                                    // フォルダピッカーを開き、選択されたフォルダのパスを格納
-                                    inputFolderPath = await FilePicker.platform.getDirectoryPath(dialogTitle: '開く');
-
-                                    // もし拡大元の画像フォルダのパスが入っていれば、フォームにフォルダパスを設定
-                                    if (inputFolderPath != null) {
-                                      setState(() {
-
-                                        // 拡大元の画像フォルダフォームのテキストを更新
-                                        inputFolderController.text = inputFolderPath!;
-
-                                        // 保存先の画像フォルダフォームのテキストを更新
-                                        updateOutputName();
-                                      });
-
-                                    // フォルダ選択がキャンセルされたので、フォームをリセット
-                                    } else {
-                                      inputFolderController.text = '';
-                                      outputFolderController.text = '';
-                                    }
-                                  },
-                                  icon: const Icon(Icons.snippet_folder_rounded),
-                                  label: Text('label.folderSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            controller: outputFolderController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: 'label.outputFolderPath'.tr(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+              children: [
+                IOFormWidget(
+                  inputFileController: inputFileController,
+                  outputFileController: outputFileController,
+                  inputFolderController: inputFolderController,
+                  outputFolderController: outputFolderController,
+                  // Widget ビルド時点での拡大率 (setState() を実行すると新しいものが反映される)
+                  upscaleRatio: upscaleRatio,
+                  // Widget ビルド時点での保存形式 (setState() を実行すると新しいものが反映される)
+                  outputFormat: outputFormat,
+                  // タブが切り替えられたときのイベント
+                  onModeChanged: (ioFormMode) => setState(() => this.ioFormMode = ioFormMode),
+                  // 保存形式が（拡大元ファイルの選択により）変更されたときのイベント
+                  onOutputFormatChanged: (outputFormat) => setState(() => this.outputFormat = outputFormat),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -729,10 +504,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                           ),
                         ],
                         onChanged: (String? value) {
-                          setState(() {
-                            // 利用モデルが変更されたらセット
-                            modelType = value ?? 'realesr-animevideov3';
-                          });
+                          setState(() => modelType = value ?? 'realesr-animevideov3');
                         },
                       ),
                     ),
@@ -764,13 +536,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                           ),
                         ],
                         onChanged: (String? value) {
-                          setState(() {
-                            // 拡大率が変更されたらセット
-                            upscaleRatio = value ?? '4x';
-
-                            // 保存先の画像ファイル or フォルダフォームのテキストを更新
-                            updateOutputName();
-                          });
+                          setState(() => upscaleRatio = value ?? '4x');
                         },
                       ),
                     ),
@@ -802,13 +568,7 @@ class _MainWindowPageState extends State<MainWindowPage> with SingleTickerProvid
                           ),
                         ],
                         onChanged: (String? value) {
-                          setState(() {
-                            // 保存形式が変更されたらセット
-                            outputFormat = value ?? 'jpg';
-
-                            // 保存先の画像ファイル or フォルダフォームのテキストを更新
-                            updateOutputName();
-                          });
+                          setState(() => outputFormat = value ?? 'jpg');
                         },
                       ),
                     ),
