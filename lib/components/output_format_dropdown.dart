@@ -1,7 +1,6 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:real_esrgan_gui/utils.dart';
 
 class OutputFormatDropdownWidget extends StatelessWidget {
   const OutputFormatDropdownWidget({

@@ -10,6 +10,7 @@ import 'package:window_size/window_size.dart';
 import 'package:real_esrgan_gui/components/io_form.dart';
 import 'package:real_esrgan_gui/components/model_type_dropdown.dart';
 import 'package:real_esrgan_gui/components/output_format_dropdown.dart';
+import 'package:real_esrgan_gui/components/start_button_and_progress_bar.dart';
 import 'package:real_esrgan_gui/utils.dart';
 
 /// バージョン
@@ -139,7 +140,7 @@ class MainWindowPageState extends State<MainWindowPage> {
   // ***** プロセス実行関連 *****
 
   /// 拡大の進捗状況 (デフォルト: 0%)
-  double progress = 0;
+  double progressPercentage = 0;
 
   /// 拡大処理を実行中かどうか
   bool isProcessing = false;
@@ -213,7 +214,7 @@ class MainWindowPageState extends State<MainWindowPage> {
 
     // プログレスバーを一旦 0% に戻す
     setState(() {
-      progress = 0;
+      progressPercentage = 0;
       isProcessing = true;
     });
 
@@ -275,7 +276,7 @@ class MainWindowPageState extends State<MainWindowPage> {
 
           setState(() {
             // 完了済みの画像の進捗 + 現在処理中の画像の進捗
-            progress = (progressStep * (progressIndex)) + (progressData / imageFiles.length);
+            progressPercentage = (progressStep * (progressIndex)) + (progressData / imageFiles.length);
           });
 
         // 失敗したときにエラーログを表示するために受け取ったログを貯めておく
@@ -293,7 +294,7 @@ class MainWindowPageState extends State<MainWindowPage> {
 
       // プログレスバーを (progressStep × 完了済みの画像の個数) に設定
       setState(() {
-        progress = progressStep * (progressIndex + 1);
+        progressPercentage = progressStep * (progressIndex + 1);
       });
 
       // 終了コードが 0 以外 (エラーで失敗)
@@ -329,7 +330,7 @@ class MainWindowPageState extends State<MainWindowPage> {
 
         // プログレスバーを 0% に戻す
         setState(() {
-          progress = 0;
+          progressPercentage = 0;
           isProcessing = false;
         });
 
@@ -343,7 +344,7 @@ class MainWindowPageState extends State<MainWindowPage> {
 
     // プログレスバーを 0% に戻す
     setState(() {
-      progress = 0;
+      progressPercentage = 0;
       isProcessing = false;
     });
   }
@@ -434,27 +435,10 @@ class MainWindowPageState extends State<MainWindowPage> {
             ),
           ),
           const Spacer(),
-          Column(
-            children: [
-              Center(
-                child: SizedBox(
-                  width: 208,
-                  height: 54,
-                  child: ElevatedButton.icon(
-                    // 拡大開始ボタンが押されたとき
-                    onPressed: upscaleImage,
-                    icon: Icon(isProcessing ? Icons.cancel : Icons.image_rounded),
-                    label: Text(isProcessing ? 'label.cancel'.tr() : 'label.start'.tr(), style: const TextStyle(fontSize: 20, height: 1.3)),
-                    style: ButtonStyle(backgroundColor: isProcessing ? MaterialStateProperty.all(const Color(0xFFEE525A)) : null),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              LinearProgressIndicator(
-                value: progress / 100,  // 100 で割った (0~1 の範囲) 値を与える
-                minHeight: 20,
-              ),
-            ],
+          StartButtonAndProgressBarWidget(
+            isProcessing: isProcessing,
+            progressPercentage: progressPercentage,
+            onButtonPressed: upscaleImage,
           ),
         ],
       ),
