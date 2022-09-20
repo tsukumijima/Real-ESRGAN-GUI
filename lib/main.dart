@@ -319,8 +319,8 @@ class MainWindowPageState extends State<MainWindowPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('message.failed').tr(),
-                  const Text('message.errorLog').tr(args: [log]),
+                  Text('message.failed'.tr()),
+                  SelectableText('message.errorLog'.tr(args: [log])),
                 ],
               ),
             ),
