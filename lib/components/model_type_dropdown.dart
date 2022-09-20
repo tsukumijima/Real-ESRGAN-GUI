@@ -8,13 +8,13 @@ class ModelTypeDropdownWidget extends StatelessWidget {
     super.key,
     required this.upscaleAlgorithmType,
     required this.modelTypes,
-    required this.defaultModelType,
+    required this.modelType,
     required this.onChanged,
   });
 
   final UpscaleAlgorithmType upscaleAlgorithmType;
   final List<String> modelTypes;
-  final String defaultModelType;
+  final String modelType;
   final void Function(String?) onChanged;
 
   @override
@@ -38,7 +38,7 @@ class ModelTypeDropdownWidget extends StatelessWidget {
         Expanded(
           child: DropdownButtonFormField(
             decoration: const InputDecoration(border: OutlineInputBorder()),
-            value: defaultModelType,
+            value: modelType,
             items: dropdownMenuItems,
             onChanged: onChanged,
           ),

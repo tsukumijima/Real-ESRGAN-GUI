@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 import 'package:real_esrgan_gui/components/io_form.dart';
 import 'package:real_esrgan_gui/components/model_type_dropdown.dart';
+import 'package:real_esrgan_gui/components/output_format_dropdown.dart';
 import 'package:real_esrgan_gui/utils.dart';
 
 /// バージョン
@@ -383,8 +384,8 @@ class MainWindowPageState extends State<MainWindowPage> {
                 const SizedBox(height: 20),
                 ModelTypeDropdownWidget(
                   upscaleAlgorithmType: UpscaleAlgorithmType.RealESRGAN,
+                  modelType: modelType,
                   modelTypes: const ['realesr-animevideov3', 'realesrgan-x4plus-anime', 'realesrgan-x4plus'],
-                  defaultModelType: 'realesr-animevideov3',
                   onChanged: (String? value) {
                     setState(() => modelType = value!);
                   },
@@ -422,36 +423,11 @@ class MainWindowPageState extends State<MainWindowPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: Text('label.format'.tr(), style: const TextStyle(fontSize: 16)),
-                    ),
-                    Expanded(
-                      child: DropdownButtonFormField(
-                        decoration: const InputDecoration(border: OutlineInputBorder()),
-                        value: outputFormat,
-                        items: [
-                          DropdownMenuItem(
-                            value: 'jpg',
-                            child: const Text('format.jpeg').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: 'png',
-                            child: const Text('format.png').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: 'webp',
-                            child: const Text('format.webp').tr(),
-                          ),
-                        ],
-                        onChanged: (String? value) {
-                          setState(() => outputFormat = value ?? 'jpg');
-                        },
-                      ),
-                    ),
-                  ],
+                OutputFormatDropdownWidget(
+                  outputFormat: outputFormat,
+                  onChanged: (String? value) {
+                    setState(() => outputFormat = value ?? 'jpg');
+                  },
                 ),
                 const SizedBox(height: 20),
               ],
