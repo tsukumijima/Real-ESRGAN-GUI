@@ -227,20 +227,7 @@ class MainWindowPageState extends State<MainWindowPage> {
     for (var progressIndex = 0; progressIndex < imageFiles.length; progressIndex++) {
 
       // realesrgan-ncnn-vulkan の実行ファイルのパスを取得
-      String executablePath = '';
-      if (Platform.isWindows) {
-        // Windows: Real-ESRGAN-GUI/data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe
-        executablePath = path.join(
-          path.dirname(Platform.resolvedExecutable),
-          'data/flutter_assets/assets/realesrgan-ncnn-vulkan.exe',
-        );
-      } else if (Platform.isMacOS) {
-        // macOS: Real-ESRGAN-GUI.app/Contents/Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan
-        executablePath = path.join(
-          path.dirname(Platform.resolvedExecutable).replaceAll('MacOS', ''),
-          'Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/realesrgan-ncnn-vulkan',
-        );
-      }
+      var executablePath = getUpscaleAlgorithmExecutablePath(UpscaleAlgorithmType.RealESRGAN);
 
       // realesrgan-ncnn-vulkan コマンドを実行
       // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する

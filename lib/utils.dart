@@ -5,8 +5,41 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:real_esrgan_gui/components/io_form.dart';
 
+/// 拡大アルゴリズムの種類
 enum UpscaleAlgorithmType {
   RealESRGAN,
+}
+
+/// 拡大アルゴリズムの実行ファイルのパスを取得する
+String getUpscaleAlgorithmExecutablePath(UpscaleAlgorithmType upscaleAlgorithmType) {
+
+  // assets/ フォルダへの絶対パスを取得する
+  // 実行ファイルを実行するためには、必然的に assets/ 以下への絶対パスを取得する必要があるため
+  var assetsDirectoryPath = '';
+  if (Platform.isWindows) {
+    // Windows: Real-ESRGAN-GUI/data/flutter_assets/assets/
+    assetsDirectoryPath = path.join(
+      path.dirname(Platform.resolvedExecutable),
+      'data/flutter_assets/assets/',
+    );
+  } else if (Platform.isMacOS) {
+    // macOS: Real-ESRGAN-GUI.app/Contents/Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/
+    assetsDirectoryPath = path.join(
+      path.dirname(Platform.resolvedExecutable).replaceAll('MacOS', ''),
+      'Frameworks/App.framework/Versions/A/Resources/flutter_assets/assets/',
+    );
+  }
+
+  // Windows でのみ .exe の拡張子をつける
+  var extension = '';
+  if (Platform.isWindows) extension = '.exe';
+
+  switch (upscaleAlgorithmType) {
+    case UpscaleAlgorithmType.RealESRGAN:
+      return path.join(assetsDirectoryPath, 'realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan${extension}');
+    default:
+      return '';
+  }
 }
 
 /// 入出力フォームのバリデーションを行う
