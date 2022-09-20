@@ -114,9 +114,9 @@ class IOFormWidgetState extends State<IOFormWidget> with SingleTickerProviderSta
       children: [
         TabBar(
           controller: fileOrFolderTabController,
-          tabs: const [
-            Tab(child: Text('ファイル選択', style: TextStyle(color: Colors.green, fontSize: 16))),
-            Tab(child: Text('フォルダ選択（一括処理）', style: TextStyle(color: Colors.green, fontSize: 16))),
+          tabs: [
+            Tab(child: const Text('label.fileSelectionMode', style: TextStyle(color: Colors.green, fontSize: 16)).tr()),
+            Tab(child: const Text('label.folderSelectionMode', style: TextStyle(color: Colors.green, fontSize: 16)).tr()),
           ],
         ),
         Column(

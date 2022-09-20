@@ -7,14 +7,14 @@ class ModelTypeDropdownWidget extends StatelessWidget {
   const ModelTypeDropdownWidget({
     super.key,
     required this.upscaleAlgorithmType,
-    required this.modelTypes,
     required this.modelType,
+    required this.modelTypeChoices,
     required this.onChanged,
   });
 
   final UpscaleAlgorithmType upscaleAlgorithmType;
-  final List<String> modelTypes;
   final String modelType;
+  final List<String> modelTypeChoices;
   final void Function(String?) onChanged;
 
   @override
@@ -22,7 +22,7 @@ class ModelTypeDropdownWidget extends StatelessWidget {
 
     // ドロップダウンメニューを動的に生成する
     List<DropdownMenuItem<String>> dropdownMenuItems = [];
-    for (var modelType in modelTypes) {
+    for (var modelType in modelTypeChoices) {
       dropdownMenuItems.add(DropdownMenuItem(
         value: modelType,
         child: Text('model.${upscaleAlgorithmType.name}.${modelType}').tr(),

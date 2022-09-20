@@ -20,7 +20,7 @@ class StartButtonAndProgressBarWidget extends StatelessWidget {
       children: [
         Center(
           child: SizedBox(
-            width: 208,
+            width: 212,
             height: 54,
             child: ElevatedButton.icon(
               // 拡大開始ボタンが押されたとき

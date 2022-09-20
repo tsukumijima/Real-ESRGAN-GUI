@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:glob/glob.dart';
 import 'package:glob/list_local_fs.dart';
 import 'package:path/path.dart' as path;
+import 'package:real_esrgan_gui/components/upscale_ratio_dropdown.dart';
 import 'package:window_size/window_size.dart';
 import 'package:real_esrgan_gui/components/io_form.dart';
 import 'package:real_esrgan_gui/components/model_type_dropdown.dart';
@@ -386,48 +387,25 @@ class MainWindowPageState extends State<MainWindowPage> {
                 ModelTypeDropdownWidget(
                   upscaleAlgorithmType: UpscaleAlgorithmType.RealESRGAN,
                   modelType: modelType,
-                  modelTypes: const ['realesr-animevideov3', 'realesrgan-x4plus-anime', 'realesrgan-x4plus'],
+                  modelTypeChoices: const ['realesr-animevideov3', 'realesrgan-x4plus-anime', 'realesrgan-x4plus'],
                   onChanged: (String? value) {
                     setState(() => modelType = value!);
                   },
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: Text('label.scale'.tr(), style: const TextStyle(fontSize: 16)),
-                    ),
-                    Expanded(
-                      child: DropdownButtonFormField(
-                        decoration: const InputDecoration(border: OutlineInputBorder()),
-                        value: upscaleRatio,
-                        items: [
-                          DropdownMenuItem(
-                            value: '4x',
-                            child: const Text('scale.4x').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: '3x',
-                            child: const Text('scale.3x').tr(),
-                          ),
-                          DropdownMenuItem(
-                            value: '2x',
-                            child: const Text('scale.2x').tr(),
-                          ),
-                        ],
-                        onChanged: (String? value) {
-                          setState(() => upscaleRatio = value ?? '4x');
-                        },
-                      ),
-                    ),
-                  ],
+                UpscaleRatioDropdownWidget(
+                  upscaleAlgorithmType: UpscaleAlgorithmType.RealESRGAN,
+                  upscaleRatio: upscaleRatio,
+                  upscaleRatioChoices: const ['4x', '3x', '2x'],
+                  onChanged: (String? value) {
+                    setState(() => upscaleRatio = value!);
+                  },
                 ),
                 const SizedBox(height: 20),
                 OutputFormatDropdownWidget(
                   outputFormat: outputFormat,
                   onChanged: (String? value) {
-                    setState(() => outputFormat = value ?? 'jpg');
+                    setState(() => outputFormat = value!);
                   },
                 ),
                 const SizedBox(height: 20),
