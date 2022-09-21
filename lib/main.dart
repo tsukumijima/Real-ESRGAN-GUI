@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:real_esrgan_gui/views/real_cugan_tab_page.dart';
 import 'package:real_esrgan_gui/views/real_esrgan_tab_page.dart';
 import 'package:window_size/window_size.dart';
 
@@ -94,32 +95,59 @@ class MainWindowPage extends StatefulWidget {
   State<MainWindowPage> createState() => MainWindowPageState();
 }
 
-class MainWindowPageState extends State<MainWindowPage> {
+class MainWindowPageState extends State<MainWindowPage> with SingleTickerProviderStateMixin {
+
+  late TabController tabController;
+  Color appBarBackgroundColor = Colors.green;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // タブが切り替わったとき、タブに応じてヘッダーの背景色を変える
+    tabController = TabController(length: 2, vsync: this);
+    tabController.addListener(() {
+      setState(() {
+        switch (tabController.index) {
+          case 0:
+            // Real-ESRGAN タブ
+            appBarBackgroundColor = Colors.green;
+            break;
+          case 1:
+            // Real-CUGAN タブ
+            appBarBackgroundColor = Colors.lightBlue;
+            break;
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 1,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: const [
-            Center(
-              child: Text('version ${version}', style: TextStyle(fontSize: 16)),
-            ),
-            SizedBox(width: 16),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Real-ESRGAN'),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: appBarBackgroundColor,
+        title: Text(widget.title),
+        actions: const [
+          Center(
+            child: Text('version ${version}', style: TextStyle(fontSize: 16)),
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            RealESRGANTabPage(),
+          SizedBox(width: 16),
+        ],
+        bottom: TabBar(
+          controller: tabController,
+          tabs: const [
+            Tab(text: 'Real-ESRGAN'),
+            Tab(text: 'Real-CUGAN'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: const [
+          RealESRGANTabPage(),
+          RealCUGANTabPage(),
+        ],
       ),
     );
   }

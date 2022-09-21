@@ -10,6 +10,7 @@ import 'package:real_esrgan_gui/components/io_form.dart';
 /// 拡大アルゴリズムの種類
 enum UpscaleAlgorithmType {
   RealESRGAN,
+  RealCUGAN,
 }
 
 /// 拡大アルゴリズムの実行ファイルのパスを取得する
@@ -39,6 +40,8 @@ String getUpscaleAlgorithmExecutablePath(UpscaleAlgorithmType upscaleAlgorithmTy
   switch (upscaleAlgorithmType) {
     case UpscaleAlgorithmType.RealESRGAN:
       return path.join(assetsDirectoryPath, 'realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan${extension}');
+    case UpscaleAlgorithmType.RealCUGAN:
+      return path.join(assetsDirectoryPath, 'realcugan-ncnn-vulkan/realcugan-ncnn-vulkan${extension}');
     default:
       return '';
   }

@@ -27,7 +27,10 @@ class StartButtonAndProgressBarWidget extends StatelessWidget {
               onPressed: onButtonPressed,
               icon: Icon(isProcessing ? Icons.cancel : Icons.image_rounded),
               label: Text(isProcessing ? 'label.cancel'.tr() : 'label.start'.tr(), style: const TextStyle(fontSize: 20, height: 1.3)),
-              style: ButtonStyle(backgroundColor: isProcessing ? MaterialStateProperty.all(const Color(0xFFEE525A)) : null),
+              style: ButtonStyle(
+                backgroundColor: isProcessing ? const MaterialStatePropertyAll(Color(0xFFEE525A)) : null,
+                foregroundColor: const MaterialStatePropertyAll(Colors.white),
+              ),
             ),
           ),
         ),

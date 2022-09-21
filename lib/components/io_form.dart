@@ -115,8 +115,8 @@ class IOFormWidgetState extends State<IOFormWidget> with SingleTickerProviderSta
         TabBar(
           controller: fileOrFolderTabController,
           tabs: [
-            Tab(child: const Text('label.fileSelectionMode', style: TextStyle(color: Colors.green, fontSize: 16)).tr()),
-            Tab(child: const Text('label.folderSelectionMode', style: TextStyle(color: Colors.green, fontSize: 16)).tr()),
+            Tab(child: Text('label.fileSelectionMode', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 16)).tr()),
+            Tab(child: Text('label.folderSelectionMode', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 16)).tr()),
           ],
         ),
         Column(
@@ -184,6 +184,7 @@ class IOFormWidgetState extends State<IOFormWidget> with SingleTickerProviderSta
                               },
                               icon: const Icon(Icons.file_open_rounded),
                               label: Text('label.imageSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
+                              style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.white)),
                             ),
                           ),
                         ],
@@ -244,6 +245,7 @@ class IOFormWidgetState extends State<IOFormWidget> with SingleTickerProviderSta
                               },
                               icon: const Icon(Icons.snippet_folder_rounded),
                               label: Text('label.folderSelect'.tr(), style: const TextStyle(fontSize: 16, height: 1.3)),
+                              style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.white)),
                             ),
                           ),
                         ],

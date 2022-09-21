@@ -7,10 +7,12 @@ class OutputFormatDropdownWidget extends StatelessWidget {
     super.key,
     required this.outputFormat,
     required this.onChanged,
+    this.labelTextAlign = TextAlign.left,
   });
 
   final String outputFormat;
   final void Function(String?) onChanged;
+  final TextAlign labelTextAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class OutputFormatDropdownWidget extends StatelessWidget {
       children: [
         SizedBox(
           width: 100,
-          child: Text('label.format'.tr(), style: const TextStyle(fontSize: 16)),
+          child: Text('label.format'.tr(), style: const TextStyle(fontSize: 16), textAlign: labelTextAlign),
         ),
         Expanded(
           child: DropdownButtonFormField(
