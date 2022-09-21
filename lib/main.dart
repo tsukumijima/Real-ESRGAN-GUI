@@ -179,12 +179,7 @@ class MainWindowPageState extends State<MainWindowPage> {
       inputFolderController: inputFolderController,
       outputFolderController: outputFolderController,
     );
-
-    // 指定されたフォルダにひとつも画像ファイルが見つからなかった場合、エラーを出して終了
-    if (ioFormMode == IOFormMode.folderSelection && imageFiles.isEmpty) {
-      showSnackBar(context: context, content: const Text('message.noImageFilesInFolder').tr());
-      return;
-    }
+    if (imageFiles.isEmpty) return;
 
     // プログレスバーを一旦 0% に戻す
     setState(() {

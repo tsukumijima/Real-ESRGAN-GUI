@@ -200,27 +200,30 @@ Future<List<Map<String, String>>> getInputFileWithOutputFilePairList({
     var glob = Glob('{**.jpg,**.jpeg,**.png,**.webp}');
     for (var file in glob.listSync(root: inputFolderController.text)) {
 
-      // 出力先ファイル名を生成
-      var outputFilePath = path.join(
-        // 出力先フォルダフォームの値
+      // 出力先のファイルパスを生成
+      var outputFilePath = path.normalize(path.join(
+        // 出力先のフォルダパスフォームの値
         outputFolderController.text,
-        // 入力元ファイルのフォルダ名 (入力元フォルダからの相対パス)
+        // 拡大元の画像ファイルのフォルダ名 (選択されたフォルダからの相対パス)
         path.relative(path.dirname(file.path), from: inputFolderController.text),
         // 入力元ファイルの拡張子なしファイル名 + 保存形式 (jpg / png / webp)
         '${path.basenameWithoutExtension(file.path)}.${outputFormat}',
-      );
+      ));
 
       // 入力元ファイルと出力先ファイルをセットで追加
       imageFiles.add({'input': file.path, 'output': outputFilePath});
     }
 
-    // 出力先フォルダを作成 (すでにある場合は何もしない)
-    if (imageFiles.isEmpty == false) {
-      await Directory(outputFolderController.text).create(recursive: true);
+    // 指定されたフォルダにひとつも画像ファイルが見つからなかった場合、エラーを出して終了
+    if (ioFormMode == IOFormMode.folderSelection && imageFiles.isEmpty) {
+      showSnackBar(context: context, content: const Text('message.noImageFilesInFolder').tr());
+      return [];  // 空の配列を返す
     }
+
+    // 出力先フォルダを作成 (すでにある場合は何もしない)
+    await Directory(outputFolderController.text).create(recursive: true);
   }
 
-  print(imageFiles);
   return imageFiles;
 }
 
