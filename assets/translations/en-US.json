@@ -26,9 +26,9 @@
       "realesrgan-x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
     },
     "RealCUGAN": {
-      "models-pro": "models-pro (for animation: better performance than models-se)",
-      "models-se": "models-se (for animation: many variations of scaling and denoising)",
-      "models-nose": "model-nose (for animation: thin edge looks)"
+      "models-pro": "models-pro (for illustrations: better performance than models-se)",
+      "models-se": "models-se (for illustrations: many variations of scaling and denoising)",
+      "models-nose": "model-nose (for illustrations: thin edge looks)"
     }
   },
   "denoise": {

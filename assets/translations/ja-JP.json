@@ -26,9 +26,9 @@
       "realesrgan-x4plus": "realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)"
     },
     "RealCUGAN": {
-      "models-pro": "models-pro (アニメ向け: models-se よりも性能が良い)",
-      "models-se": "models-se (アニメ向け: 拡大率やノイズ除去のバリエーションが豊富)",
-      "models-nose": "models-nose (アニメ向け: エッジが細めの画になる)"
+      "models-pro": "models-pro (イラストやアニメ向け: models-se よりも性能が良い)",
+      "models-se": "models-se (イラストやアニメ向け: 拡大率やノイズ除去のバリエーションが豊富)",
+      "models-nose": "models-nose (イラストやアニメ向け: エッジが細めの画になる)"
     }
   },
   "denoise": {

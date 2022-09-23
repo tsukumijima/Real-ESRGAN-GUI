@@ -26,9 +26,9 @@
       "realesrgan-x4plus": "realesrgan-x4plus (Поширені: повільний з Intel Graphics)"
     },
     "RealCUGAN": {
-      "models-pro": "models-pro (для анімації: краща продуктивність, ніж models-se)",
-      "models-se": "models-se (для анімації: безліч варіацій масштабування і згладжування)",
-      "models-nose": "model-nose (для анімації: тонкі краї)"
+      "models-pro": "models-pro (для ілюстрації: краща продуктивність, ніж models-se)",
+      "models-se": "models-se (для ілюстрації: безліч варіацій масштабування і згладжування)",
+      "models-nose": "model-nose (для ілюстрації: тонкі краї)"
     }
   },
   "denoise": {
