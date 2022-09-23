@@ -11,7 +11,7 @@ class StartButtonAndProgressBarWidget extends StatelessWidget {
   });
 
   final bool isProcessing;
-  final double progressPercentage;
+  final double? progressPercentage;
   final void Function() onButtonPressed;
 
   @override
@@ -36,7 +36,7 @@ class StartButtonAndProgressBarWidget extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         LinearProgressIndicator(
-          value: progressPercentage / 100,  // 100 で割った (0~1 の範囲) 値を与える
+          value: progressPercentage == null ? null : (progressPercentage! / 100),  // 100 で割った (0~1 の範囲) 値を与える
           minHeight: 20,
         ),
       ],

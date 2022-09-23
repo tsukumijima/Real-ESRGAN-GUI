@@ -60,7 +60,7 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
   // ***** プロセス実行関連 *****
 
   /// 拡大の進捗状況 (デフォルト: 0%)
-  double progressPercentage = 0;
+  double? progressPercentage = 0;
 
   /// 拡大処理を実行中かどうか
   bool isProcessing = false;
@@ -102,21 +102,46 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
     );
     if (imageFiles.isEmpty) return;
 
-    // プログレスバーを一旦 0% に戻す
-    setState(() {
-      progressPercentage = 0;
-      isProcessing = true;
-    });
-
     // 画像ファイル1つごとに何%プログレスバーを進めるかの値
     // たとえば4つのファイルが処理対象なら、ここには 25 (%) が入る
     var progressStep = 100 / imageFiles.length;
+
+    // プログレスバーをファイル選択モードのときはプログレスバーを無限に設定
+    // フォルダ選択モードのときはとりあえず progressStep の10%に設定（なんも進んでないと誤解されないように）
+    setState(() {
+      if (ioFormMode == IOFormMode.fileSelection) {
+        progressPercentage = null;
+      } else {
+        progressPercentage = progressStep * 0.1;
+      }
+      isProcessing = true;
+    });
 
     // 画像ファイルごとに繰り返す
     for (var progressIndex = 0; progressIndex < imageFiles.length; progressIndex++) {
 
       // realcugan-ncnn-vulkan の実行ファイルのパスを取得
       var executablePath = getUpscaleAlgorithmExecutablePath(UpscaleAlgorithmType.RealCUGAN);
+
+      // 実際に引数として与えるノイズ除去レベル
+      String denoiseLevelArg;
+      switch (denoiseLevel) {
+        case DenoiseLevel.conservative:
+          denoiseLevelArg = '-1';
+          break;
+        case DenoiseLevel.none:
+          denoiseLevelArg = '0';
+          break;
+        case DenoiseLevel.denoise1x:
+          denoiseLevelArg = '1';
+          break;
+        case DenoiseLevel.denoise2x:
+          denoiseLevelArg = '2';
+          break;
+        case DenoiseLevel.denoise3x:
+          denoiseLevelArg = '3';
+          break;
+      }
 
       // realcugan-ncnn-vulkan コマンドを実行
       // ワーキングディレクトリを実行ファイルと同じフォルダに移動しておかないと macOS で Segmentation fault になり実行に失敗する
@@ -129,7 +154,9 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
           // 保存先の画像ファイル
           '-o', imageFiles[progressIndex]['output']!,
           // 利用モデル
-          '-n', modelType,
+          '-m', modelType,
+          // ノイズ除去レベル
+          '-n', denoiseLevelArg,
           // 拡大率 (2x の x は除く)
           '-s', upscaleRatio.replaceAll('x', ''),
           // 保存形式
