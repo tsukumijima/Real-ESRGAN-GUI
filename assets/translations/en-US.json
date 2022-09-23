@@ -9,6 +9,7 @@
     "imageSelect": "Select file",
     "folderSelect": "Select folder",
     "model": "Model:",
+    "denoise": "Denoise:",
     "scale": "Scale:",
     "format": "Format:",
     "start": "Start Upscaling",
@@ -26,9 +27,16 @@
     },
     "RealCUGAN": {
       "models-pro": "models-pro (for animation: better performance than models-se)",
-      "models-se": "models-se (for animation: many variations of magnification and denoising)",
+      "models-se": "models-se (for animation: many variations of scaling and denoising)",
       "models-nose": "model-nose (for animation: thin edge looks)"
     }
+  },
+  "denoise": {
+    "conservative": "no denoise (preserve detail as much as possible)",
+    "none": "no denoise",
+    "denoise1x": "denoise: level 1 (fine detail is lost)",
+    "denoise2x": "denoise: level 2 (fine detail is lost)",
+    "denoise3x": "denoise: level 3 (fine detail is lost)"
   },
   "scale": {
     "4x": "Scale up to 4x resolution",

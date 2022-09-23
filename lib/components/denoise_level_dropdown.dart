@@ -63,7 +63,7 @@ class DenoiseLevelDropdownWidget extends StatelessWidget {
       children: [
         SizedBox(
           width: 100,
-          child: Text('ノイズ除去: '.tr(), style: const TextStyle(fontSize: 16)),
+          child: Text('label.denoise'.tr(), style: const TextStyle(fontSize: 16)),
         ),
         Expanded(
           child: DropdownButtonFormField(

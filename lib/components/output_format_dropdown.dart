@@ -40,6 +40,7 @@ class OutputFormatDropdownWidget extends StatelessWidget {
                 child: const Text('format.webp').tr(),
               ),
             ],
+            isExpanded: true,
             onChanged: onChanged,
           ),
         ),

@@ -73,6 +73,7 @@ class UpscaleRatioDropdownWidget extends StatelessWidget {
             decoration: const InputDecoration(border: OutlineInputBorder()),
             value: upscaleRatio,
             items: dropdownMenuItems,
+            isExpanded: true,
             onChanged: onChanged,
           ),
         ),

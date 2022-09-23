@@ -40,6 +40,7 @@ class ModelTypeDropdownWidget extends StatelessWidget {
             decoration: const InputDecoration(border: OutlineInputBorder()),
             value: modelType,
             items: dropdownMenuItems,
+            isExpanded: true,
             onChanged: onChanged,
           ),
         ),
