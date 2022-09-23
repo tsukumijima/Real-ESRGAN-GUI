@@ -23,6 +23,11 @@
       "realesr-animevideov3": "realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)",
       "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)",
       "realesrgan-x4plus": "realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (アニメ向け: models-se よりも性能が良い)",
+      "models-se": "models-se (アニメ向け: 拡大率やノイズ除去のバリエーションが豊富)",
+      "models-nose": "models-nose (アニメ向け: エッジが細めの画になる)"
     }
   },
   "scale": {

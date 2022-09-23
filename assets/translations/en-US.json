@@ -23,6 +23,11 @@
       "realesr-animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
       "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
       "realesrgan-x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (for animation: better performance than models-se)",
+      "models-se": "models-se (for animation: many variations of magnification and denoising)",
+      "models-nose": "model-nose (for animation: thin edge looks)"
     }
   },
   "scale": {

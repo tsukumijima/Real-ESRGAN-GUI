@@ -30,9 +30,32 @@ class DenoiseLevelDropdownWidget extends StatelessWidget {
     // ドロップダウンメニューを動的に生成する
     List<DropdownMenuItem<DenoiseLevel>> dropdownMenuItems = [];
     for (var denoiseLevel in DenoiseLevel.values) {
+
+      var isEnabled = true;
+      switch (modelType) {
+        // モデルタイプが models-pro の場合: denoise1x と denoise2x のモデルはないので無効化
+        case 'models-pro':
+          if (denoiseLevel == DenoiseLevel.denoise1x) isEnabled = false;
+          if (denoiseLevel == DenoiseLevel.denoise2x) isEnabled = false;
+          break;
+        // モデルタイプが models-se の場合: 拡大率 3x・4x には denoise1x と denoise2x のモデルはないので無効化
+        case 'models-se':
+          if (upscaleRatio != '2x' && denoiseLevel == DenoiseLevel.denoise1x) isEnabled = false;
+          if (upscaleRatio != '2x' && denoiseLevel == DenoiseLevel.denoise2x) isEnabled = false;
+          break;
+        // モデルタイプが models-nose の場合: none 以外のモデルはないので無効化
+        case 'models-nose':
+          if (denoiseLevel == DenoiseLevel.conservative) isEnabled = false;
+          if (denoiseLevel == DenoiseLevel.denoise1x) isEnabled = false;
+          if (denoiseLevel == DenoiseLevel.denoise2x) isEnabled = false;
+          if (denoiseLevel == DenoiseLevel.denoise3x) isEnabled = false;
+          break;
+      }
+
       dropdownMenuItems.add(DropdownMenuItem(
         value: denoiseLevel,
-        child: Text('denoise.${denoiseLevel.name}'.tr()),
+        enabled: isEnabled,
+        child: Text('denoise.${denoiseLevel.name}'.tr(), style: TextStyle(color: isEnabled ? Colors.black : Colors.black38)),
       ));
     }
 

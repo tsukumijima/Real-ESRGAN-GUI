@@ -46,6 +46,9 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
   /// "models-pro"・"models-se"・"models-nose" のいずれか
   String modelType = 'models-pro';
 
+  /// ノイズ除去レベル (デフォルト: ディティールを保持)
+  DenoiseLevel denoiseLevel = DenoiseLevel.conservative;
+
   /// 拡大率 (デフォルト: 2倍)
   /// "2x"・"3x"・"4x" のいずれか
   String upscaleRatio = '2x';
@@ -243,14 +246,54 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
                   modelTypeChoices: const ['models-pro', 'models-se', 'models-nose'],
                   onChanged: (String? value) {
                     setState(() => modelType = value!);
+
+                    // モデルに応じてノイズ除去レベルや拡大率の対応状況が異なる
+                    // ノイズ除去レベルや拡大率が変更されたモデルでは対応していない場合、別の値に変更する
+
+                    // ノイズ除去の場合
+                    switch (modelType) {
+                      // モデルタイプが models-pro の場合: denoise1x と denoise2x のモデルはない
+                      case 'models-pro':
+                        if (denoiseLevel == DenoiseLevel.denoise1x || denoiseLevel == DenoiseLevel.denoise2x) {
+                          setState(() => denoiseLevel = DenoiseLevel.denoise3x);
+                        }
+                        break;
+                      // モデルタイプが models-se の場合: 拡大率 3x・4x には denoise1x と denoise2x のモデルはない
+                      case 'models-se':
+                        if (upscaleRatio != '2x') {
+                          if (denoiseLevel == DenoiseLevel.denoise1x || denoiseLevel == DenoiseLevel.denoise2x) {
+                            setState(() => denoiseLevel = DenoiseLevel.denoise3x);
+                          }
+                        }
+                        break;
+                      // モデルタイプが models-nose の場合: none 以外のモデルはない
+                      case 'models-nose':
+                        if (denoiseLevel != DenoiseLevel.none) {
+                          setState(() => denoiseLevel = DenoiseLevel.none);
+                        }
+                        break;
+                    }
+
+                    // 拡大率の場合
+                    switch (modelType) {
+                      // モデルタイプが models-pro の場合: 拡大率 4x には対応していない
+                      case 'models-pro':
+                        if (upscaleRatio == '4x') setState(() => upscaleRatio = '3x');
+                        break;
+                      // モデルタイプが models-pro の場合: 拡大率 4x・3x には対応していない
+                      case 'models-nose':
+                        if (upscaleRatio == '4x' || upscaleRatio == '3x') setState(() => upscaleRatio = '2x');
+                        break;
+                    }
                   },
                 ),
                 const SizedBox(height: 20),
                 DenoiseLevelDropdownWidget(
-                  denoiseLevel: DenoiseLevel.conservative,
+                  denoiseLevel: denoiseLevel,
                   modelType: modelType,
                   upscaleRatio: upscaleRatio,
                   onChanged: (DenoiseLevel? value) {
+                    setState(() => denoiseLevel = value!);
                   },
                 ),
                 const SizedBox(height: 20),
@@ -260,7 +303,7 @@ class RealCUGANTabPageState extends State<RealCUGANTabPage> {
                       child: UpscaleRatioDropdownWidget(
                         upscaleAlgorithmType: UpscaleAlgorithmType.RealCUGAN,
                         upscaleRatio: upscaleRatio,
-                        upscaleRatioChoices: const ['2x', '3x', '4x'],
+                        modelType: modelType,
                         onChanged: (String? value) {
                           setState(() => upscaleRatio = value!);
                         },

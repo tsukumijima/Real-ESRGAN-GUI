@@ -258,7 +258,7 @@ class RealESRGANTabPageState extends State<RealESRGANTabPage> {
               UpscaleRatioDropdownWidget(
                 upscaleAlgorithmType: UpscaleAlgorithmType.RealESRGAN,
                 upscaleRatio: upscaleRatio,
-                upscaleRatioChoices: const ['4x', '3x', '2x'],
+                modelType: modelType,
                 onChanged: (String? value) {
                   setState(() => upscaleRatio = value!);
                 },
