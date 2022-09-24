@@ -1,13 +1,16 @@
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:real_esrgan_gui/views/real_cugan_tab_page.dart';
 import 'package:real_esrgan_gui/views/real_esrgan_tab_page.dart';
 import 'package:window_size/window_size.dart';
 
 /// バージョン
-const String version = '1.1.0';
+const String version = '1.2.0-dev';
 
 void main() async {
 
@@ -33,7 +36,7 @@ void main() async {
   // DPI スケールに合わせて調整する (Windows のみ)
   /// macOS のみ、ウインドウの最小高さから 10px ほど引く
   /// Windows と macOS でウインドウのタイトルバーの高さが異なるため
-  double minWidth = 750 * dpiScale;
+  double minWidth = 780 * dpiScale;
   double minHeight = (Platform.isMacOS ? 684 : 694) * dpiScale;
 
   // 左上を起点にしたウインドウのX座標・Y座標
@@ -120,6 +123,56 @@ class MainWindowPageState extends State<MainWindowPage> with SingleTickerProvide
         }
       });
     });
+
+    // 更新をチェック
+    (() async {
+      var response = await http.get(Uri.parse('https://api.github.com/repos/tsukumijima/Real-ESRGAN-GUI/tags'));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        var retrieveVersion = (data[0]['name'] as String).replaceAll('v', '');
+        if (version != retrieveVersion) {
+
+          // 更新があるのでダイヤログを表示
+          var goUpdateUrl = false;
+          await showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (_) {
+              return AlertDialog(
+                title: const Text('アップデート情報'),
+                content: Text('新しいバージョン ${retrieveVersion} がリリースされています。\nアップデートをダウンロードしますか？'),
+                actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
+                actions: [
+                  SizedBox(
+                    height: 40,
+                    child: TextButton(
+                      child: const Text('今はまだしない'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      style: const ButtonStyle(elevation: MaterialStatePropertyAll(0)),
+                      child: const Text('ダウンロード'),
+                      onPressed: () {
+                        goUpdateUrl = true;
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+
+          // ダウンロード先 URL を開く
+          if (goUpdateUrl) {
+            await launchUrl(Uri.parse('https://github.com/tsukumijima/Real-ESRGAN-GUI/releases/tag/v${retrieveVersion}'));
+          }
+        }
+      }
+    })();
   }
 
   @override

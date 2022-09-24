@@ -42,7 +42,9 @@ dependencies:
   file_picker: ^5.1.0
   file_selector: ^0.9.2
   glob: ^2.1.0
+  http: ^0.13.5
   path: ^1.8.2
+  url_launcher: ^6.1.5
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
