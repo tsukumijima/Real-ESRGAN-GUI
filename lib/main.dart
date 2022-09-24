@@ -10,7 +10,7 @@ import 'package:real_esrgan_gui/views/real_esrgan_tab_page.dart';
 import 'package:window_size/window_size.dart';
 
 /// バージョン
-const String version = '1.2.0-dev';
+const String version = '1.2.0';
 
 void main() async {
 
