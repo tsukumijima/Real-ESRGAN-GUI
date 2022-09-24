@@ -17,7 +17,10 @@
     "close": "Close",
     "overwriteConfirm": "Overwriting Confirmation",
     "overwriteFile": "Overwrite file",
-    "overwriteFolder": "Overwrite folder"
+    "overwriteFolder": "Overwrite folder",
+    "updateInformation": "Update Information",
+    "later": "Later",
+    "download": "Download"
   },
   "model": {
     "RealESRGAN": {
@@ -61,6 +64,7 @@
     "invalidOutputFolderPath": "The output folder path is invalid.",
     "overwriteFileConfirm": "The output file \"{}\" already exists.\nDo you really want to overwrite the file?",
     "overwriteFolderConfirm": "The output folder \"{}\" already exists.\nFiles in the output folder may be overwritten. Do you really want to overwrite the folder?",
-    "noImageFilesInFolder": "No image files were found in the specified folder"
+    "noImageFilesInFolder": "No image files were found in the specified folder",
+    "updateInformation": "New version {} has been released.\nWould you like to download the update?"
   }
 }

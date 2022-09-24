@@ -139,14 +139,14 @@ class MainWindowPageState extends State<MainWindowPage> with SingleTickerProvide
             barrierDismissible: true,
             builder: (_) {
               return AlertDialog(
-                title: const Text('アップデート情報'),
-                content: Text('新しいバージョン ${retrieveVersion} がリリースされています。\nアップデートをダウンロードしますか？'),
+                title: const Text('label.updateInformation').tr(),
+                content: const Text('message.updateInformation').tr(args: [retrieveVersion]),
                 actionsPadding: const EdgeInsets.only(right: 12, bottom: 12),
                 actions: [
                   SizedBox(
                     height: 40,
                     child: TextButton(
-                      child: const Text('今はまだしない'),
+                      child: const Text('label.later').tr(),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -154,7 +154,7 @@ class MainWindowPageState extends State<MainWindowPage> with SingleTickerProvide
                     height: 40,
                     child: ElevatedButton(
                       style: const ButtonStyle(elevation: MaterialStatePropertyAll(0)),
-                      child: const Text('ダウンロード'),
+                      child: const Text('label.download').tr(),
                       onPressed: () {
                         goUpdateUrl = true;
                         Navigator.pop(context);
