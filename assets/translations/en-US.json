@@ -1,25 +1,45 @@
 {
   "label": {
+    "fileSelectionMode": "File Selection",
+    "folderSelectionMode": "Folder Selection (batch processing)",
     "inputFile": "Original image file",
     "inputFolder": "Original image folder",
-    "outputFilePath": "Output image file path",
-    "outputFolderPath": "Output image folder path",
+    "outputFilePath": "Output file path",
+    "outputFolderPath": "Output folder path",
     "imageSelect": "Select file",
     "folderSelect": "Select folder",
     "model": "Model:",
+    "denoise": "Denoise:",
     "scale": "Scale:",
     "format": "Format:",
-    "start": "Start scale up",
+    "start": "Start Upscaling",
     "cancel": "Cancel",
     "close": "Close",
     "overwriteConfirm": "Overwriting Confirmation",
     "overwriteFile": "Overwrite file",
-    "overwriteFolder": "Overwrite folder"
+    "overwriteFolder": "Overwrite folder",
+    "updateInformation": "Update Information",
+    "later": "Later",
+    "download": "Download"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
-    "x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
-    "x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (for illustrations: stable and fastest)",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (for illustrations: a little slower)",
+      "realesrgan-x4plus": "realesrgan-x4plus (common: slow with Intel Graphics)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (for illustrations: better performance than models-se)",
+      "models-se": "models-se (for illustrations: many variations of scaling and denoising)",
+      "models-nose": "model-nose (for illustrations: thin edge looks)"
+    }
+  },
+  "denoise": {
+    "conservative": "no denoise (preserve detail as much as possible)",
+    "none": "no denoise",
+    "denoise1x": "denoise: level 1 (fine detail is lost)",
+    "denoise2x": "denoise: level 2 (fine detail is lost)",
+    "denoise3x": "denoise: level 3 (fine detail is lost)"
   },
   "scale": {
     "4x": "Scale up to 4x resolution",
@@ -40,8 +60,11 @@
     "noInputFolder": "Please select an image folder.",
     "noOutputFilePath": "Please select an output file path.",
     "noOutputFolderPath": "Please select an output folder path.",
+    "invalidOutputFilePath": "The output file path is invalid.",
+    "invalidOutputFolderPath": "The output folder path is invalid.",
     "overwriteFileConfirm": "The output file \"{}\" already exists.\nDo you really want to overwrite the file?",
     "overwriteFolderConfirm": "The output folder \"{}\" already exists.\nFiles in the output folder may be overwritten. Do you really want to overwrite the folder?",
-    "noImageFilesInFolder": "No image files were found in the specified folder"
+    "noImageFilesInFolder": "No image files were found in the specified folder",
+    "updateInformation": "New version {} has been released.\nWould you like to download the update?"
   }
 }

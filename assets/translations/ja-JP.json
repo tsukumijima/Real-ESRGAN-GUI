@@ -1,5 +1,7 @@
 {
   "label": {
+    "fileSelectionMode": "ファイル選択",
+    "folderSelectionMode": "フォルダ選択（一括処理）",
     "inputFile": "拡大元の画像ファイル",
     "inputFolder": "拡大元の画像フォルダ",
     "outputFilePath": "保存先のファイルパス",
@@ -7,6 +9,7 @@
     "imageSelect": "ファイルを選択",
     "folderSelect": "フォルダを選択",
     "model": "利用モデル:",
+    "denoise": "ノイズ除去:",
     "scale": "拡大率:",
     "format": "保存形式:",
     "start": "拡大開始",
@@ -14,17 +17,34 @@
     "close": "閉じる",
     "overwriteConfirm": "上書きの確認",
     "overwriteFile": "ファイルを上書き",
-    "overwriteFolder": "フォルダを上書き"
+    "overwriteFolder": "フォルダを上書き",
+    "updateInformation": "アップデート情報",
+    "later": "今はまだしない",
+    "download": "ダウンロード"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)",
-    "x4plus-anime": "realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)",
-    "x4plus": "realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (イラストやアニメ向け: 高速でおすすめ)",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (イラストやアニメ向け: ちょっと重め)",
+      "realesrgan-x4plus": "realesrgan-x4plus (汎用的なモデル: Intel Graphics だと重め)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (イラストやアニメ向け: models-se よりも性能が良い)",
+      "models-se": "models-se (イラストやアニメ向け: 拡大率やノイズ除去のバリエーションが豊富)",
+      "models-nose": "models-nose (イラストやアニメ向け: エッジが細めの画になる)"
+    }
+  },
+  "denoise": {
+    "conservative": "ノイズを除去しない (できるだけディティールを保持)",
+    "none": "ノイズを除去しない",
+    "denoise1x": "ノイズを除去: レベル1 (細かいディティールは失われる)",
+    "denoise2x": "ノイズを除去: レベル2 (細かいディティールは失われる)",
+    "denoise3x": "ノイズを除去: レベル3 (細かいディティールは失われる)"
   },
   "scale": {
     "4x": "4倍の解像度に拡大",
-    "3x": "3倍の解像度に拡大 (壊滅的な画像が生成されることがあります)",
-    "2x": "2倍の解像度に拡大 (壊滅的な画像が生成されることがあります)"
+    "3x": "3倍の解像度に拡大",
+    "2x": "2倍の解像度に拡大"
   },
   "format": {
     "jpeg": "JPEG 形式 (.jpg)",
@@ -40,8 +60,11 @@
     "noInputFolder": "拡大元の画像フォルダが指定されていません！",
     "noOutputFilePath": "保存先のファイルパスが指定されていません！",
     "noOutputFolderPath": "保存先のフォルダパスが指定されていません！",
+    "invalidOutputFilePath": "保存先のファイルパスが不正です。",
+    "invalidOutputFolderPath": "保存先のフォルダパスが不正です。",
     "overwriteFileConfirm": "保存先のファイル \"{}\" はすでに存在します。\n本当にファイルを上書きしますか？",
     "overwriteFolderConfirm": "保存先のフォルダ \"{}\" はすでに存在します。\n保存先のフォルダ内にあるファイルが上書きされる可能性があります。本当にフォルダを上書きしますか？",
-    "noImageFilesInFolder": "指定されたフォルダの中に画像ファイルが見つかりませんでした。"
+    "noImageFilesInFolder": "指定されたフォルダの中に画像ファイルが見つかりませんでした。",
+    "updateInformation": "新しいバージョン {} がリリースされています。\nアップデートをダウンロードしますか？"
   }
 }

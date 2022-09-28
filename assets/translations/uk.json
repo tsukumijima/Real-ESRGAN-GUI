@@ -1,25 +1,45 @@
 {
   "label": {
+    "fileSelectionMode": "Вибір файлу",
+    "folderSelectionMode": "Вибір папки (пакетна обробка)",
     "inputFile": "Оригінальний файл зображення",
     "inputFolder": "Оригінальний папка зображення",
-    "outputFilePath": "Шлях до файлу вихідного зображення",
-    "outputFolderPath": "Шлях до папки вихідного зображення",
+    "outputFilePath": "Шлях до вихідного файлу",
+    "outputFolderPath": "Шлях до вихідної папки",
     "imageSelect": "Виберіть файл",
     "folderSelect": "Виберіть папку",
     "model": "Модель:",
+    "denoise": "денуаз:",
     "scale": "Шкала збільшення:",
     "format": "Формат:",
-    "start": "Розпочати масштабування",
+    "start": "Початок масштабування",
     "cancel": "Скасувати",
     "close": "Закрити",
     "overwriteConfirm": "Підтвердження перезапису",
     "overwriteFile": "Перезапис файлів",
-    "overwriteFolder": "Перезапис папки"
+    "overwriteFolder": "Перезапис папки",
+    "updateInformation": "Оновити інформацію",
+    "later": "Пізніше",
+    "download": "Завантажити"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (для ілюстрації: найстабільніший і найшвидший)",
-    "x4plus-anime": "realesrgan-x4plus-anime (для ілюстрації: трохи повільніше)",
-    "x4plus": "realesrgan-x4plus (Поширені: повільний з Intel Graphics)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (для ілюстрації: найстабільніший і найшвидший)",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (для ілюстрації: трохи повільніше)",
+      "realesrgan-x4plus": "realesrgan-x4plus (Поширені: повільний з Intel Graphics)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (для ілюстрації: краща продуктивність, ніж models-se)",
+      "models-se": "models-se (для ілюстрації: безліч варіацій масштабування і згладжування)",
+      "models-nose": "model-nose (для ілюстрації: тонкі краї)"
+    }
+  },
+  "denoise": {
+    "conservative": "no denoise (максимально зберегти деталізацію)",
+    "none": "no denoise",
+    "denoise1x": "denoise: level 1 (втрачається дрібна деталізація)",
+    "denoise2x": "denoise: level 2 (втрачається дрібна деталізація)",
+    "denoise3x": "denoise: level 3 (втрачається дрібна деталізація)"
   },
   "scale": {
     "4x": "Масштабування до 4-кратної роздільної здатності",
@@ -40,8 +60,11 @@
     "noInputFolder": "Будь ласка, виберіть папку з зображенням.",
     "noOutputFilePath": "Будь ласка, оберіть вихідний шлях.",
     "noOutputFolderPath": "Будь ласка, виберіть шлях до вихідної папки.",
+    "invalidOutputFilePath": "Неправильний шлях до вихідного файлу.",
+    "invalidOutputFolderPath": "Неправильний шлях до вихідної папки.",
     "overwriteFileConfirm": "Вихідний файл \"{}\" вже існує.\nВи дійсно хочете перезаписати файл?",
     "overwriteFolderConfirm": "Вихідна папка \"{}\" вже існує.\nФайли у вихідній теці можуть бути перезаписані. Ви дійсно хочете перезаписати папку?",
-    "noImageFilesInFolder": "У зазначеній папці файлів зображень не знайдено."
+    "noImageFilesInFolder": "У зазначеній папці файлів зображень не знайдено.",
+    "updateInformation": "Вийшла нова версія {}.\nБажаєте завантажити оновлення?"
   }
 }
