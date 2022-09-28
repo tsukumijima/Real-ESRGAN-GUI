@@ -1,25 +1,45 @@
 {
   "label": {
+    "fileSelectionMode": "文件选择模式",
+    "folderSelectionMode": "文件夹选择模式 (批处理)",
     "inputFile": "源图像文件",
     "inputFolder": "源图像文件夹",
-    "outputFilePath": "输出图像文件",
-    "outputFolderPath": "输出图像文件夹",
+    "outputFilePath": "输出图像文件路径",
+    "outputFolderPath": "输出图像文件夹路径",
     "imageSelect": "选择文件",
     "folderSelect": "选择文件夹",
-    "model": "模型:",
-    "scale": "放大率:",
-    "format": "格式:",
+    "model": "模型：",
+    "denoise": "降噪：",
+    "scale": "放大率：",
+    "format": "格式：",
     "start": "开始放大",
     "cancel": "取消",
     "close": "关闭",
     "overwriteConfirm": "确认覆盖",
     "overwriteFile": "覆盖文件",
-    "overwriteFolder": "覆盖文件夹"
+    "overwriteFolder": "覆盖文件夹",
+    "updateInformation": "更新信息",
+    "later": "以后",
+    "download": "下载"
   },
   "model": {
-    "animevideov3": "realesr-animevideov3 (面向插图：高速 (推荐))",
-    "x4plus-anime": "realesrgan-x4plus-anime (面向插图：有一点慢)",
-    "x4plus": "realesrgan-x4plus (通用: 英特尔显卡处理速度慢)"
+    "RealESRGAN": {
+      "realesr-animevideov3": "realesr-animevideov3 (面向插图：高速 (推荐))",
+      "realesrgan-x4plus-anime": "realesrgan-x4plus-anime (面向插图：有一点慢)",
+      "realesrgan-x4plus": "realesrgan-x4plus (通用: 英特尔显卡处理速度慢)"
+    },
+    "RealCUGAN": {
+      "models-pro": "models-pro (用于插图：比models-se更好的性能)",
+      "models-se": "models-se (用于插图： 更加丰富的放大和降噪)",
+      "models-nose": "model-nose (用于插图： 细化边缘)"
+    }
+  },
+  "denoise": {
+    "conservative": "无降噪 (尽可能保留细节)",
+    "none": "无降噪",
+    "denoise1x": "降噪: 等级1 (丢失细节)",
+    "denoise2x": "降噪: 等级2 (丢失细节)",
+    "denoise3x": "降噪: 等级3 (丢失细节)"
   },
   "scale": {
     "4x": "4倍放大倍率",
@@ -40,8 +60,11 @@
     "noInputFolder": "请选择图像文件夹",
     "noOutputFilePath": "请选择输出文件路径",
     "noOutputFolderPath": "请选择输出文件夹路径",
+    "invalidOutputFilePath": "输出文件路径无效。",
+    "invalidOutputFolderPath": "输出文件夹路径无效。",
     "overwriteFileConfirm": "输出文件 \"{}\" 已经存在。\n确认是否覆盖？",
     "overwriteFolderConfirm": "输出文件夹 \"{}\" 已经存在。\n在输出文件夹中的文件可能会被覆盖。 确认是否覆盖？",
-    "noImageFilesInFolder": "在指定文件夹中找不到图像文件。"
+    "noImageFilesInFolder": "在指定文件夹中找不到图像文件。",
+    "updateInformation": "新版本 {} 已经发布。\n你需要下载更新吗？"
   }
 }
