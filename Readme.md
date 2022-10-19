@@ -124,6 +124,19 @@ Real-ESRGAN は元々4倍に拡大することを前提に開発されている�
 また、GPU のドライバーのバージョンが古くなっていると、画像を生成できなかったり、生成したとしても真っ黒の画像しか生成されないなどの問題が生じることがあるようです。  
 一度 GPU のドライバーを最新バージョンのものに更新してみることをおすすめします。
 
+## 寄付・支援について
+
+**今のところ [アマギフ (Amazon ギフト券)](https://www.amazon.co.jp/b?node=3131877051&tag=tsukumijima-22) だけ受けつけています。**  
+
+特典などは今のところありませんが、それでも寄付していただけるのであれば、アマギフの URL を [Twitter の DM (クリックすると DM が開きます)](https://twitter.com/messages/compose?recipient_id=1116800514614628352) か `tsukumizimaあっとgmail.com` まで送っていただけると、大変開発の励みになります…🙏🙏🙏
+
+また、**[Amazon のほしい物リスト](https://www.amazon.co.jp/hz/wishlist/ls/3AZ4RI13SW2PV) もあります。** どのようなものでも贈っていただけると泣いて喜びます……😭🙏
+
+このほか、**[こちら](https://www.amazon.co.jp/?tag=tsukumijima-22) のリンクをクリックしてから Amazon で何かお買い物していただくことでも支援できます (Amazon アソシエイト)。**  
+買う商品はどのようなものでも OK ですが、より [紹介料率 (商品価格のうち、何%がアソシエイト参加者に入るかの割合)](https://affiliate.amazon.co.jp/help/node/topic/GRXPHT8U84RAYDXZ) が高く、価格が高い商品の方が、私に入る報酬は高くなります。Kindle の電子書籍や食べ物・飲み物は紹介料率が高めに設定されているみたいです。  
+
+> もしかすると GitHub から Amazon に飛ぶと[リファラ](https://wa3.i-3-i.info/word129.html)チェックで弾かれてしまうかもしれないので、リンクをコピペして新しく開いたタブに貼り付ける方が良いかもしれません。
+
 ## License
 
 [MIT License](License.txt)
